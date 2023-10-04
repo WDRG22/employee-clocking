@@ -82,7 +82,7 @@ export const Signup = () => {
         password: "",
         passwordVerify: ""
     });
-
+    const [emailError, setEmailError] = useState('');
     const { firstName, lastName, email, password, passwordVerify } = data;
     const navigate = useNavigate();
 
@@ -128,8 +128,7 @@ export const Signup = () => {
                 console.log("Signup successful:", responseData);
                 navigate('/login');
             } else {
-                console.error("Signup error:", responseData.message);
-                alert(responseData.message);
+                setEmailError(responseData.message);
             }
 
         } catch (err) {
@@ -145,9 +144,17 @@ export const Signup = () => {
                 <Header>Sign Up</Header>
                 <Input type="text" name="firstName" value={firstName} onChange={changeHandler} placeholder="First Name" />
                 <Input type="text" name="lastName" value={lastName} onChange={changeHandler} placeholder="Last Name" />
-                <Input type="email" name="email" value={email} onChange={changeHandler} placeholder="Email" />
+                <Input 
+                    type="email" 
+                    name="email" 
+                    value={email} 
+                    onChange={changeHandler} 
+                    placeholder="Email" 
+                    style={emailError ? { borderColor: 'red'} : {}}
+                />
                 <Input type="password" name="password" value={password} onChange={changeHandler} placeholder="Password" />
                 <Input type="password" name="passwordVerify" value={passwordVerify} onChange={changeHandler} placeholder="Verify Password" />
+                {emailError && <p style={{ color: 'red', fontWeight: 'bold' }}>{emailError}</p>}
                 <Button type="submit">Signup</Button>
                 <SignInLink to="/login">Already have an account? Sign In</SignInLink>
             </SignupForm>

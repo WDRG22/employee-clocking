@@ -8,22 +8,17 @@ const https = require('https');
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const { expressjwt } = require('express-jwt');
+const cookieParser = require('cookie-parser');
 const app = express();
 const saltRounds = 10;
 let employeesCollection, attendanceCollection;
 
 // Middleware
+app.use(cookieParser());
 app.use(cors({
     origin: ["http://localhost:3000"],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true
-}));
-app.use(expressjwt({
-    secret: process.env.JWT_SECRET,
-    algorithms: ['HS256'],
-    getToken: req => req.cookies.token
-}).unless({
-    path: ['/login', '/signup']
 }));
 app.use(express.json());
 
@@ -33,6 +28,7 @@ let retryCount = 0;
 const connectToMongo = () => {    
     MongoClient.connect('mongodb://localhost:27017', { connectTimeoutMS: 5000, socketTimeoutMS: 5000 })
         .then(client => {
+            console.log("Successfully connected to database")
             const db = client.db('clocking_system');
             employeesCollection = db.collection('employees');
             attendanceCollection = db.collection('attendance');
@@ -55,18 +51,23 @@ const initRoutes = () => {
     const employeesRouter = newRouter(employeesCollection);
     const attendanceRouter = newRouter(attendanceCollection);
 
+    // Test route
+    app.get('/api/employees/test', (req, res) => {
+        res.send('Server is working!');
+    });
+
     // New user creation
     app.post('/api/employees/signup', async (req, res, next) => {
-        const { email, password } = req.body;
+        const { firstName, lastName, email, password } = req.body;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
         try {
-            const newUser = await employeesCollection.insertOne({ email, password: hashedPassword });
+            const newUser = await employeesCollection.insertOne({ firstName, lastName, email, password: hashedPassword });
             res.status(200).json({ message: 'User registered', newUser });
         } catch (err) {
             // Check for duplicate email error from MongoDB
             if (err.code === 11000) {
-                return res.status(400).json({ message: 'Email already registered' });
+                return res.status(400).json({ message: 'An account with this email already exists' });
             }
             console.error(err);
             next(err);  // Pass the error to the next middleware
@@ -121,7 +122,15 @@ const initRoutes = () => {
 // Initial MongoDB connection attempt
 connectToMongo();
 
-// Error handling middleware
+// Middleware
+app.use(expressjwt({
+    secret: process.env.JWT_SECRET,
+    algorithms: ['HS256'],
+    getToken: req => req.cookies ? req.cookies.token : null
+}).unless({
+    path: ['/api/employees/login', '/api/employees/signup', '/api/employees/test']
+}));
+
 app.use((err, req, res, next) => {
     if (res.headersSent) {
         return next(err);

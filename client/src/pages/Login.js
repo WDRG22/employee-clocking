@@ -88,6 +88,7 @@ export const Login = () => {
         password: "",
         showPassword: false,
     });
+    const [incorrectDetailsError, setIncorrectDetailsError] = useState('')
 
     const { setUser } = useUser();
     const { email, password, showPassword } = data;
@@ -112,17 +113,16 @@ export const Login = () => {
               body: JSON.stringify({ email, password }),
           });
 
-          const data = await response.json();
+          const responseData = await response.json();
           
           // Successful login
           if (response.ok) {
-              console.log("Login successful:", data);
+              console.log("Login successful:", responseData);
               // Do other tasks after successful login: set token, redirect, etc.
-              setUser(data.user);
+              setUser(responseData.user);
               navigate('/');
-          } else {
-              console.error("Login error:", data.message);  // Assumes your server responds with an error message in case of unsuccessful login
-              alert(data.message);  // Notify user of error
+          } else {            
+              setIncorrectDetailsError(responseData.message);
           }
 
       } catch (err) {
@@ -130,7 +130,6 @@ export const Login = () => {
           alert("Failed to connect to the server. Please try again.");  // Notify user of error
       }
   }
-
 
     return (
         <Container>
@@ -145,6 +144,7 @@ export const Login = () => {
                     <span>Show password</span>
                   </label>
                 </CheckboxContainer>
+                {incorrectDetailsError && <p style={{ color: 'red', fontWeight: 'bold' }}>{incorrectDetailsError}</p>}
                 <Button type="submit">Login</Button>
                 <CreateAccountLink to="/signup">Create an account</CreateAccountLink>
             </LoginForm>

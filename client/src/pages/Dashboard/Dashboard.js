@@ -1,0 +1,46 @@
+import React, { useState, useEffect } from 'react';
+import Header from '../../components/header/Header';
+import './Dashboard.css';
+
+const clockIn = async () => {
+    try {
+        const response = await fetch('http://localhost:8080');
+        const data = await response.json();
+        console.log(data);
+    } catch (error) {
+        console.error("Error clocking in:", error);
+    }
+}
+
+const clockOut = async () => {
+    try {
+        const response = await fetch('http://localhost:8080');
+        const data = await response.json();
+        console.log(data);
+    } catch (error) {
+        console.error("Error clocking out:", error);
+    }
+}
+
+export const Dashboard = () => {
+    const [date, setDate] = useState(new Date());
+
+    useEffect(() => {
+        const timer = setInterval(() => setDate(new Date()), 1000);
+        return () => clearInterval(timer);
+    }, []);
+
+    return (
+        <div className="container">
+            <Header />
+            <p className="timeDisplay">Local Time : {date.toLocaleTimeString()}</p>
+            <p className="timeDisplay">Local Date : {date.toLocaleDateString()}</p>
+            <div className="buttonGroup">
+                <button className="button" onClick={clockIn}>Clock In</button>
+                <button className="button" onClick={clockOut}>Clock Out</button>
+            </div>
+        </div>
+    );
+}
+
+export default Dashboard;

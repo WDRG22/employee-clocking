@@ -1,8 +1,8 @@
 import {BrowserRouter, Routes, Route, Navigate} from "react-router-dom";
 import { useUser } from "../auth/UserContext";
-import Dashboard from '../pages/Dashboard';
-import Login from '../pages/Login';
-import Signup from '../pages/Signup';
+import Dashboard from '../pages/dashboard/Dashboard';
+import Login from '../pages/login/Login';
+import Signup from '../pages/signup/Signup';
 
 
 function RoutesComponent() {

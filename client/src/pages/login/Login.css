@@ -1,0 +1,78 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: center;
+    height: 100vh; 
+    background-color: #333;
+}
+
+.logo {
+    display: block;
+    margin: 0;
+    max-width: 100%;
+    height: auto;
+    width: 300px;
+}
+
+.loginForm {
+    text-align: left;
+    background: #444;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    width: 300px;
+}
+
+.header {
+    color: white;
+    text-align: center;
+}
+
+.input {
+    width: 95%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #555;
+    border-radius: 5px;
+    background-color: #555;
+    color: white;
+}
+
+.input::placeholder {
+    color: #aaa;
+}
+
+.button {
+    width: 100%;
+    padding: 10px;
+    background-color: #007BFF;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.button:hover {
+    background-color: #0056b3;
+}
+
+.createAccountLink {
+    display: block;
+    margin-top: 10px;
+    text-align: center;
+    text-decoration: none;
+    color: #007BFF;
+}
+
+.createAccountLink:hover {
+    text-decoration: underline;
+}
+
+.checkboxContainer {
+    display: flex;
+    align-items: center;
+    color: white;
+    margin: 10px 0;
+}

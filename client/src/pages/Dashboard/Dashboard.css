@@ -1,0 +1,35 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #333;
+}
+
+.timeDisplay {
+    color: white;
+    font-size: 48px;
+    margin: 15px 0;
+}
+
+.buttonGroup {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.button {
+    margin: 10px;
+    padding: 10px 20px;
+    background-color: #007BFF;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.button:hover {
+    background-color: #0056b3;
+}

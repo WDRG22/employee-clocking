@@ -1,18 +1,5 @@
-const SignoutButton = styled.button`
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    padding: 8px 15px;
-    background-color: #FF5733;
-    border: none;
-    border-radius: 5px;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-    &:hover {
-        background-color: #C43F00;
-    }
-`;
+import React from 'react';
+import './LogoutButton.css';
 
 export const LogoutButton = () => {
     const logout = () => {
@@ -20,13 +7,13 @@ export const LogoutButton = () => {
         // cookies.remove('token');
         document.cookie = 'token=; Max-Age=0'; // This will clear the 'token' cookie
 
-        // Now redirect the user to login (or wherever you'd like them to go post-logout)
+        // Now redirect the user to post-logout
         window.location.href = '/login';
     }
 
     return (
         <Container>
-            <SignoutButton onClick={logout}>Logout</SignoutButton>
+            <button className="signoutButton" onClick={logout}>Logout</button>
             <TimeDisplay>Local Time : {date.toLocaleTimeString()}</TimeDisplay>
             <TimeDisplay>Local Date : {date.toLocaleDateString()}</TimeDisplay>
             <ButtonGroup>

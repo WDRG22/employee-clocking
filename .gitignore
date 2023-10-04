@@ -1,0 +1,11 @@
+# Ignore .env
+.env
+
+# Ignore pem
+.pem
+
+# Ignore node_modules
+node_modules
+
+# Ignore vscode settings
+.vscode

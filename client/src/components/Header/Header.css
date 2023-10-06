@@ -1,14 +1,14 @@
-.headerContainer {
+.header .headerContainer {
     display: flex;
     justify-content: space-between;
     align-items: center;
     background-color: #333;
-    width: 100%;  /* Adjusted width so it centers based on your margins */
+    width: 100%;
     height: 10%;
 }
 
-.headerLeft,
-.headerRight {
+.header .headerLeft,
+.header .headerRight {
     display: flex;    
     align-items: center;
     height: 100%;
@@ -16,37 +16,37 @@
     margin-right: 2%;
 }
 
-.headerLeft {
+.header .headerLeft {
     justify-content: flex-start;
     gap: 15px;
 }
 
-.headerRight {
+.header .headerRight {
     justify-content: flex-end;
     gap: 15px;
 }
 
-.logoButton {
+.header .logoButton {
     background: none;  
     border: none;     
     cursor: pointer;
     height: 50%;
 }
 
-.logoImage {
+.header .logoImage {
     height: 100%;
     display: block;
 }
 
-.navigationButtons {
+.header .navigationButtons {
     display: flex;
     align-items: center;    
     height: 100%;
     gap: 5px;
 }
 
-.navButton,
-.logoutButton {
+.header .navButton,
+.header .logoutButton {
     padding: 8px 15px;
     height: 60%;
     border: none;
@@ -55,21 +55,21 @@
     color: white;
     font-weight: bold;
     cursor: pointer;
-    transition: background-color 0.3s ease; /* Smooth transition */
+    transition: background-color 0.3s ease;
 }
 
-.navButton {
+.header .navButton {
     background-color: #007BFF;
 }
 
-.navButton:hover {
+.header .navButton:hover {
     background-color: #0056b3;
 }
 
-.logoutButton {
+.header .logoutButton {
     background-color: #FF5733;
 }
 
-.logoutButton:hover {
+.header .logoutButton:hover {
     background-color: #C43F00;
 }

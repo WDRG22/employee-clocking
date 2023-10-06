@@ -69,7 +69,7 @@ export const Signup = () => {
     }
 
     return (
-        <div className="container">
+        <div className='signup'>
             <img className="logo" src={logo} alt="Cyntra Logo" />
             <form className="signupForm" onSubmit={submitHandler}>
                 <h2 className="header">Sign Up</h2>

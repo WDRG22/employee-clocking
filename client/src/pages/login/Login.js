@@ -53,23 +53,23 @@ export const Login = () => {
     }
 
     return (
-        <div className="container">
-        <img className="logo" src={logo} alt="Cyntra Logo" />
-        <form className="loginForm" onSubmit={submitHandler}>
-            <h2 className="header">Sign In</h2>
-            <input className="input" type="email" name="email" value={email} onChange={changeHandler} placeholder="Email" />
-            <input className="input" type={showPassword ? "text" : "password"} name="password" value={password} onChange={changeHandler} placeholder="Password" />
-            <div className="checkboxContainer">
-                <label>
-                    <input type="checkbox" name="showPassword" checked={showPassword} onChange={changeHandler} />
-                    <span>Show password</span>
-                </label>
-            </div>
-            {incorrectDetailsError && <p style={{ color: 'red', fontWeight: 'bold' }}>{incorrectDetailsError}</p>}
-            <button className="button" type="submit">Login</button>
-            <Link className="createAccountLink" to="/signup">Create an account</Link>
-        </form>
-    </div>
+        <div className='login'>
+            <img className="logo" src={logo} alt="Cyntra Logo" />
+            <form className="loginForm" onSubmit={submitHandler}>
+                <h2 className="header">Sign In</h2>
+                <input className="input" type="email" name="email" value={email} onChange={changeHandler} placeholder="Email" />
+                <input className="input" type={showPassword ? "text" : "password"} name="password" value={password} onChange={changeHandler} placeholder="Password" />
+                <div className="checkboxContainer">
+                    <label>
+                        <input type="checkbox" name="showPassword" checked={showPassword} onChange={changeHandler} />
+                        <span>Show password</span>
+                    </label>
+                </div>
+                {incorrectDetailsError && <p style={{ color: 'red', fontWeight: 'bold' }}>{incorrectDetailsError}</p>}
+                <button className="button" type="submit">Login</button>
+                <Link className="createAccountLink" to="/signup">Create an account</Link>
+            </form>
+        </div>
     );
 }
 

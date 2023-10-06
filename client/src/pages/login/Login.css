@@ -1,21 +1,24 @@
-.container {
+.login {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
+    text-align: center;
+    padding-top: 10vh;
     height: 100vh; 
     background-color: #333;
+    gap: 50px;
 }
 
-.logo {
+.login .logo {
     display: block;
-    margin: 0;
+    margin: 0 auto;
     max-width: 100%;
     height: auto;
     width: 300px;
 }
 
-.loginForm {
+.login .loginForm {
     text-align: left;
     background: #444;
     padding: 20px;
@@ -24,12 +27,12 @@
     width: 300px;
 }
 
-.header {
+.login .header {
     color: white;
     text-align: center;
 }
 
-.input {
+.login .input {
     width: 95%;
     padding: 10px;
     margin: 10px 0;
@@ -39,11 +42,11 @@
     color: white;
 }
 
-.input::placeholder {
+.login .input::placeholder {
     color: #aaa;
 }
 
-.button {
+.login .button {
     width: 100%;
     padding: 10px;
     background-color: #007BFF;
@@ -54,11 +57,11 @@
     cursor: pointer;
 }
 
-.button:hover {
+.login .button:hover {
     background-color: #0056b3;
 }
 
-.createAccountLink {
+.login .createAccountLink {
     display: block;
     margin-top: 10px;
     text-align: center;
@@ -66,11 +69,11 @@
     color: #007BFF;
 }
 
-.createAccountLink:hover {
+.login .createAccountLink:hover {
     text-decoration: underline;
 }
 
-.checkboxContainer {
+.login .checkboxContainer {
     display: flex;
     align-items: center;
     color: white;

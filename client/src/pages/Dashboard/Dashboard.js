@@ -45,13 +45,17 @@ export const Dashboard = () => {
     }, []);
 
     return (
-        <div className="container">
+        <div className='dashboard'>
             <Header />
-            <p className="timeDisplay">Local Time : {date.toLocaleTimeString()}</p>
-            <p className="timeDisplay">Local Date : {date.toLocaleDateString()}</p>
-            <div className="buttonGroup">
-                <button className="button" onClick={clockIn}>Clock In</button>
-                <button className="button" onClick={clockOut}>Clock Out</button>
+            <div className="dashboardContainer">                
+                <div className='timeDisplayContainer'>
+                    <p className="timeDisplay">Local Time : {date.toLocaleTimeString()}</p>
+                    <p className="timeDisplay">Local Date : {date.toLocaleDateString()}</p>
+                </div>
+                <div className="buttonGroup">
+                    <button className="button" onClick={clockIn}>Clock In</button>
+                    <button className="button" onClick={clockOut}>Clock Out</button>
+                </div>
             </div>
         </div>
     );

@@ -1,4 +1,4 @@
-.container {
+.dashboard .dashboardContainer {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -7,19 +7,19 @@
     background-color: #333;
 }
 
-.timeDisplay {
+.dashboard .timeDisplay {
     color: white;
     font-size: 48px;
     margin: 15px 0;
 }
 
-.buttonGroup {
+.dashboard .buttonGroup {
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.button {
+.dashboard .button {
     margin: 10px;
     padding: 10px 20px;
     background-color: #007BFF;
@@ -30,6 +30,6 @@
     cursor: pointer;
 }
 
-.button:hover {
+.dashboard .button:hover {
     background-color: #0056b3;
 }

@@ -9,18 +9,20 @@ const Header = () => {
     }
 
     return (
-        <div className="headerContainer">
-            <div className='headerLeft'>
-                <button className="logoButton">
-                    <img className='logoImage' src={logo} alt="Cyntra"/>
-                </button>
-                <div className="navigationButtons">
-                    <button className="navButton" onClick={() => window.location.href = '/'}>Homepage</button>
-                    <button className="navButton" onClick={() => window.location.href = '/account'}>Account</button>
+        <div className='header'>
+            <div className="headerContainer">
+                <div className='headerLeft'>
+                    <button className="logoButton">
+                        <img className='logoImage' src={logo} alt="Cyntra"/>
+                    </button>
+                    <div className="navigationButtons">
+                        <button className="navButton" onClick={() => window.location.href = '/'}>Homepage</button>
+                        <button className="navButton" onClick={() => window.location.href = '/account'}>Account</button>
+                    </div>
                 </div>
-            </div>
-            <div className='headerRight'>
-                <button className="logoutButton" onClick={logout}>Logout</button>
+                <div className='headerRight'>
+                    <button className="logoutButton" onClick={logout}>Logout</button>
+                </div>
             </div>
         </div>
     );

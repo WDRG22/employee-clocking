@@ -18,7 +18,7 @@ export const UserProvider = ({ children }) => {
                 const response = await fetch(ACCOUNT_ENDPOINT, {
                     method: 'GET',
                     mode: 'cors',
-                    credentials: 'include', // Send HttpOnly cookie
+                    credentials: 'include',
                     headers: {
                         'Content-Type': 'application/json'
                     }

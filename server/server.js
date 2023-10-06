@@ -21,7 +21,7 @@ app.use(expressjwt({
     algorithms: ['HS256'],
     getToken: req => req.cookies ? req.cookies.token : null
 }).unless({
-    path: ['/api/employees/login', '/api/employees/signup', '/api/employees/test']
+    path: ['/api/login', '/api/signup']
 }));
 
 // Use imported routes

@@ -4,7 +4,7 @@ import { useUser } from "../../auth/UserContext";
 import logo from "../../assets/cyntra_logo_white.png";
 import './Login.css';
 
-const LOGIN_ENDPOINT = "https://localhost:8080/api/employees/login";
+const LOGIN_ENDPOINT = "https://localhost:8080/api/login";
 
 export const Login = () => {
     const [data, setData] = useState({

@@ -22,7 +22,7 @@ router.get('/api/test', (req, res) => {
 });
 
 // New user creation
-router.post('/api/employees/signup', async (req, res, next) => {
+router.post('/api/signup', async (req, res, next) => {
     const { firstName, lastName, email, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
@@ -39,7 +39,7 @@ router.post('/api/employees/signup', async (req, res, next) => {
 });
 
 // Login verification and JWT authentication and authorization
-router.post('/api/employees/login', async (req, res, next) => {
+router.post('/api/login', async (req, res, next) => {
     const { email, password } = req.body;
     try {
         const user = await db.oneOrNone('SELECT * FROM employees WHERE email = $1', [email]);
@@ -53,7 +53,7 @@ router.post('/api/employees/login', async (req, res, next) => {
             
             // Send token as a cookie to the client
             const isSecure = process.env.NODE_ENV === 'production';
-            res.cookie('token', token, { httpOnly: true, secure: isSecure, sameSite: 'none', maxAge: 3600000 });
+            res.cookie('token', token, { httpOnly: true, secure: isSecure, maxAge: 3600000 });
             
             const { password: _, ...userData } = user;  // Exclude password from response
             res.status(200).json({ message: 'Login successful', user: userData });
@@ -66,7 +66,7 @@ router.post('/api/employees/login', async (req, res, next) => {
 });
 
 // Logout - NEED TO UPDATE CLIENT-SIDE HANDLING
-router.post('/api/employees/logout', (req, res) => {
+router.post('/api/logout', (req, res) => {
     // Clear the JWT cookie
     res.clearCookie('token');
     res.status(200).json({ message: 'Logged out successfully' });
@@ -86,6 +86,7 @@ router.get('/api/account', async (req, res, next) => {
 
 router.post('/api/work_entries/clock_in', async (req, res, next) => {
     const { employee_id, clock_in_location } = req.body;
+    console.log('received...');
 
     try {
         const clockInEntry = await db.one('INSERT INTO work_entries(employee_id, clock_in, clock_in_location) VALUES($1, NOW(), $2) RETURNING *', [employee_id, clock_in_location]);
@@ -99,6 +100,7 @@ router.post('/api/work_entries/clock_in', async (req, res, next) => {
 // Clock-out route
 router.post('/api/work_entries/clock_out', async (req, res, next) => {
     const { entry_id, clock_out_location, tasks } = req.body;
+    console.log('received...');
 
     try {
         const clockOutEntry = await db.one('UPDATE work_entries SET clock_out = NOW(), clock_out_location = $2, tasks = $3 WHERE entry_id = $1 RETURNING *', [entry_id, clock_out_location, tasks]);

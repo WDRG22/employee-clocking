@@ -1,5 +1,6 @@
 import React from 'react';
 import './Header.css';
+import logo from '../../assets/cyntra_logo_white.png'
 
 const Header = () => {
     const logout = () => {
@@ -9,12 +10,18 @@ const Header = () => {
 
     return (
         <div className="headerContainer">
-            <div className="logo">MyAppLogo</div>
-            <div className="navigationButtons">
-                <button className="navButton" onClick={() => window.location.href = '/'}>Homepage</button>
-                <button className="navButton" onClick={() => window.location.href = '/account'}>Account</button>
+            <div className='headerLeft'>
+                <button className="logoButton">
+                    <img className='logoImage' src={logo} alt="Cyntra"/>
+                </button>
+                <div className="navigationButtons">
+                    <button className="navButton" onClick={() => window.location.href = '/'}>Homepage</button>
+                    <button className="navButton" onClick={() => window.location.href = '/account'}>Account</button>
+                </div>
             </div>
-            <button className="logoutButton" onClick={logout}>Logout</button>
+            <div className='headerRight'>
+                <button className="logoutButton" onClick={logout}>Logout</button>
+            </div>
         </div>
     );
 }

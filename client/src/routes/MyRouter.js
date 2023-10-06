@@ -5,8 +5,12 @@ import Login from '../pages/login/Login';
 import Signup from '../pages/signup/Signup';
 
 
-function RoutesComponent() {
-    const { user } = useUser();
+function MyRouter() {
+    const { user, isLoading } = useUser();
+
+    if (isLoading) {
+        return <div>Loading...</div>; // or your preferred loading indicator
+    }
 
     return (
         <BrowserRouter>
@@ -23,10 +27,11 @@ function RoutesComponent() {
                     path="/signup"
                     element={user? <Navigate to="/" /> : <Signup />}
                 />
-                <Route path="*" element={<Navigate to="/" />} />
+                {/* Create page not found */}
+                <Route path="*" element={<Navigate to="/" />} /> 
             </Routes>
         </BrowserRouter>
     )
 }
 
-export default RoutesComponent;
+export default MyRouter;

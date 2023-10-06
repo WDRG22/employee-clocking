@@ -1,31 +1,61 @@
-
 .headerContainer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 20px;
     background-color: #333;
+    width: 100%;  /* Adjusted width so it centers based on your margins */
+    height: 10%;
 }
 
-.logo {
-    font-size: 24px;
-    color: white;
+.headerLeft,
+.headerRight {
+    display: flex;    
+    align-items: center;
+    height: 100%;
+    margin-left: 2%;
+    margin-right: 2%;
+}
+
+.headerLeft {
+    justify-content: flex-start;
+    gap: 15px;
+}
+
+.headerRight {
+    justify-content: flex-end;
+    gap: 15px;
+}
+
+.logoButton {
+    background: none;  
+    border: none;     
     cursor: pointer;
+    height: 50%;
+}
+
+.logoImage {
+    height: 100%;
+    display: block;
 }
 
 .navigationButtons {
     display: flex;
-    gap: 10px;
+    align-items: center;    
+    height: 100%;
+    gap: 5px;
 }
 
 .navButton,
 .logoutButton {
     padding: 8px 15px;
+    height: 60%;
     border: none;
     border-radius: 5px;
+    border-color: white;
     color: white;
     font-weight: bold;
     cursor: pointer;
+    transition: background-color 0.3s ease; /* Smooth transition */
 }
 
 .navButton {

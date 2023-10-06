@@ -4,7 +4,14 @@ import './Dashboard.css';
 
 const clockIn = async () => {
     try {
-        const response = await fetch('http://localhost:8080');
+        const response = await fetch('http://localhost:8080/api/attendance/clockin', {
+            method: 'POST',
+            mode: 'cors',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
         const data = await response.json();
         console.log(data);
     } catch (error) {
@@ -14,7 +21,14 @@ const clockIn = async () => {
 
 const clockOut = async () => {
     try {
-        const response = await fetch('http://localhost:8080');
+        const response = await fetch('http://localhost:8080/api/attendance/clockout', {
+            method: 'POST',
+            mode: 'cors',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            }        
+        });
         const data = await response.json();
         console.log(data);
     } catch (error) {

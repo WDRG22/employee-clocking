@@ -8,8 +8,8 @@ const LOGIN_ENDPOINT = "https://localhost:8080/api/employees/login";
 
 export const Login = () => {
     const [data, setData] = useState({
-        email: "",
-        password: "",
+        email: "test@test.com",
+        password: "test123",
         showPassword: false,
     });
     const [incorrectDetailsError, setIncorrectDetailsError] = useState('')
@@ -25,35 +25,32 @@ export const Login = () => {
 
     // Submit login info to server
     const submitHandler = async e => {
-      e.preventDefault();
-
-      try {
-          const response = await fetch(LOGIN_ENDPOINT, {
-              method: 'POST',
-              mode: 'cors',
-              headers: {
-                  'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ email, password }),
-          });
-
-          const responseData = await response.json();
-          
-          // Successful login
-          if (response.ok) {
-              console.log("Login successful:", responseData);
-              // Do other tasks after successful login: set token, redirect, etc.
-              setUser(responseData.user);
-              navigate('/');
-          } else {            
-              setIncorrectDetailsError(responseData.message);
-          }
-
-      } catch (err) {
-          console.error("An error occurred:", err);
-          alert("Failed to connect to the server. Please try again.");  // Notify user of error
-      }
-  }
+        e.preventDefault();
+    
+        try {
+            const response = await fetch(LOGIN_ENDPOINT, {
+                method: 'POST',
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password }),
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                console.log("User data after successful login:", data.user);
+                setUser(data.user);
+                navigate('/');
+            } else {
+                const data = await response.json();
+                setIncorrectDetailsError(data.message);
+            }
+        } catch (err) {
+            console.error("An error occurred:", err);
+            alert("Failed to connect to the server. Please try again.");
+        }
+    }
 
     return (
         <div className="container">

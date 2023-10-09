@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Header from '../../components/header/Header';
 import { useUser } from "../../auth/UserContext";
 import './Dashboard.css';
+import { fetchWithTokenRefresh } from '../../utils/apiUtils';
 
 const clockIn = async (employeeId, location, currentTime) => {
     try {
@@ -10,7 +11,7 @@ const clockIn = async (employeeId, location, currentTime) => {
             location,
             currentTime
         };
-        const response = await fetch('/api/test', {
+        const response = await fetchWithTokenRefresh('/api/test', {
             method: 'POST',
             mode: 'cors',
             credentials: 'include',
@@ -34,7 +35,7 @@ const clockOut = async (employeeId, location, currentTime) => {
             location,
             currentTime
         };
-        const response = await fetch('/api/work_entries/clock_out', {
+        const response = await fetchWithTokenRefresh('/api/work_entries/clock_out', {
             method: 'POST',
             mode: 'cors',
             credentials: 'include',

@@ -1,8 +1,9 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../auth/UserContext';
-import './Header.css';
+import { fetchWithTokenRefresh } from '../../utils/apiUtils';
 import logo from '../../assets/cyntra_logo_white.png'
+import './Header.css';
 
 const Header = () => {
     const navigate = useNavigate();
@@ -10,7 +11,7 @@ const Header = () => {
 
     const logout = async () => {
         try {
-            const response = await fetch('/api/logout', {
+            const response = await fetchWithTokenRefresh('/api/logout', {
                 method: 'POST',
                 credentials: 'include',
                 headers: {

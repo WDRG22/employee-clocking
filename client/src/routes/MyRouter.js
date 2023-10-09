@@ -4,6 +4,11 @@ import Dashboard from '../pages/dashboard/Dashboard';
 import Login from '../pages/login/Login';
 import Signup from '../pages/signup/Signup';
 
+const PrivateRoute = ({ children }) => {
+    const { user } = useUser();
+    if (user) return children;
+    return <Navigate to="/login" replace />;
+}
 
 function MyRouter() {
     const { user, isLoading } = useUser();
@@ -15,20 +20,17 @@ function MyRouter() {
     return (
         <BrowserRouter>
             <Routes>
-                <Route
-                    path="/"
-                    element={user ? (<Dashboard/>) : (<Navigate to="/login" />)}
-                />
-                <Route
-                    path="/login"
-                    element={user ? <Navigate to="/" /> : <Login />}
-                />
-                <Route
-                    path="/signup"
-                    element={user? <Navigate to="/" /> : <Signup />}
-                />
-                {/* Create page not found */}
+                <Route path="/login" element={user ? <Navigate to="/" /> : <Login />}/>
+                <Route path="/signup" element={user? <Navigate to="/" /> : <Signup />}/>
                 <Route path="*" element={<Navigate to="/" />} /> 
+                {/* Create page not found */}
+
+                {/* Private Routes*/}
+                <Route path="/" element={
+                    <PrivateRoute>
+                        <Dashboard />
+                    </PrivateRoute>
+                } />
             </Routes>
         </BrowserRouter>
     )

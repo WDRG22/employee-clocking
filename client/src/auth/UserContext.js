@@ -1,4 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import { fetchWithTokenRefresh } from '../utils/apiUtils';
 
 const UserContext = createContext();
 
@@ -14,7 +15,7 @@ export const UserProvider = ({ children }) => {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const response = await fetch("/api/account", {
+                const response = await fetchWithTokenRefresh("/api/account", {
                     method: 'GET',
                     credentials: 'include',
                     headers: {

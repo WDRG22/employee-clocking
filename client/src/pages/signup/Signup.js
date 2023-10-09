@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { fetchWithTokenRefresh } from '../../utils/apiUtils';
 import logo from "../../assets/cyntra_logo_white.png";
 import './Signup.css';
 
-const SIGNUP_ENDPOINT = "/api/signup";
 
 export const Signup = () => {
     const [data, setData] = useState({
@@ -45,7 +45,7 @@ export const Signup = () => {
         }
 
         try {
-            const response = await fetch(SIGNUP_ENDPOINT, {
+            const response = await fetchWithTokenRefresh("/api/signup", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

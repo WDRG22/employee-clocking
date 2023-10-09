@@ -50,20 +50,21 @@ router.post('/api/login', async (req, res, next) => {
             
             // Generate JWT token from unique user id
             const payload = {
-                userId: user.id // Use 'id' instead of '_id'
+                userId: user.employee_id // Use 'id' instead of '_id'
             };
+            
             const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
 
             // Generate refresh token and insert into db w/ corresponding userid
             const refreshToken = crypto.randomBytes(64).toString('hex');
-            await db.none('INSERT INTO refresh_tokens (token, user_id) VALUES ($1, $2)', [refreshToken, user.id]);
+            await db.none('INSERT INTO refresh_tokens (token, user_id) VALUES ($1, $2)', [refreshToken, user.employee_id]);
             
             // Send tokens as cookies
             res.cookie('token', token, {
                 httpOnly: true,
                 sameSite: 'None',
                 secure: true,
-                maxAge: 36000  // 1 hr
+                maxAge: 3600000  // 1 hr
             });
             res.cookie('refreshToken', refreshToken, {
                 httpOnly: true,
@@ -99,13 +100,12 @@ router.post('/api/logout', async (req, res) => {
 // Get user account data if logged in
 router.get('/api/account', async (req, res, next) => {
     try {
-        console.log('Hit /api/account endpoint');
         // Check if user is authenticated
         if (!req.user || !req.user.userId) {
             return res.status(401).json({ error: 'Not authenticated' });
         }
 
-        const user = await db.oneOrNone('SELECT * FROM employees WHERE id = $1', [req.user.userId]);
+        const user = await db.oneOrNone('SELECT * FROM employees WHERE employee_id = $1', [req.user.userId]);
 
         // Check if user was found in the database
         if (!user) {
@@ -167,7 +167,7 @@ router.post('/api/token/refresh', async (req, res, next) => {
         res.cookie('token', newToken, {
             httpOnly: true,
             sameSite: 'None',
-            secure: isSecure,
+            secure: true,
             maxAge: 3600000 
         });
 

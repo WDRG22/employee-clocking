@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import React, { useState } from 'react';
 import { useUser } from "../../auth/UserContext";
+import { fetchWithTokenRefresh } from '../../utils/apiUtils';
 import logo from "../../assets/cyntra_logo_white.png";
 import './Login.css';
 
@@ -26,7 +27,7 @@ export const Login = () => {
         e.preventDefault();
     
         try {
-            const response = await fetch("/api/login", {
+            const response = await fetchWithTokenRefresh("/api/login", {
                 method: 'POST',
                 mode: 'cors',
                 headers: {

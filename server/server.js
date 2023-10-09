@@ -8,24 +8,37 @@ const cookieParser = require('cookie-parser');
 const app = express();
 const routes = require('./routes.js');
 
+
 // Process JSON data
 app.use(cookieParser());
 app.use(express.json());
 
-// Logging
+// Manual jwt verification
+const jwt = require('jsonwebtoken');
 app.use((req, res, next) => {
-    console.log('Cookies:', req.cookies);
-    next();
+    const token = req.cookies.token;
+    if (token) {
+        try {
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            req.user = decoded;
+            next();
+        } catch (err) {
+            // handle the error (invalid token, etc.)
+            next(err);
+        }
+    } else {
+        next();
+    }
 });
-
-// Run JWT middleware if route requires auth
-app.use(expressjwt({
-    secret: process.env.JWT_SECRET,
-    algorithms: ['HS256'],
-    getToken: req => req.cookies ? req.cookies.token : null
-}).unless({
-path: ['/api/login', '/api/signup', /^\/(?!api\/).*/]
-}));
+  
+// JWT middleware fails to verify token for some reason
+// app.use(expressjwt({
+//     secret: process.env.JWT_SECRET,
+//     algorithms: ['HS256'],
+//     getToken: req => req.cookies ? req.cookies.token : null
+// }).unless({
+// path: ['/api/login', '/api/signup', /^\/(?!api\/).*/]
+// }));
 
 // Hit defined routes
 app.use(routes);

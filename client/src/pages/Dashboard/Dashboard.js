@@ -10,7 +10,7 @@ const clockIn = async (employeeId, location, currentTime) => {
             location,
             currentTime
         };
-        const response = await fetch('https://localhost:8080/api/test', {
+        const response = await fetch('/api/test', {
             method: 'POST',
             mode: 'cors',
             credentials: 'include',
@@ -34,7 +34,7 @@ const clockOut = async (employeeId, location, currentTime) => {
             location,
             currentTime
         };
-        const response = await fetch('https://localhost:8080/api/work_entries/clock_out', {
+        const response = await fetch('/api/work_entries/clock_out', {
             method: 'POST',
             mode: 'cors',
             credentials: 'include',

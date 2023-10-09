@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import logo from "../../assets/cyntra_logo_white.png";
 import './Signup.css';
 
-const SIGNUP_ENDPOINT = "https://localhost:8080/api/employees/signup";
+const SIGNUP_ENDPOINT = "/api/signup";
 
 export const Signup = () => {
     const [data, setData] = useState({

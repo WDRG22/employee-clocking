@@ -19,6 +19,7 @@ const router = express.Router();
 // Test route
 router.get('/api/test', (req, res) => {
     res.send('Server is working!');
+    console.log(__dirname)
 });
 
 // New user creation
@@ -53,7 +54,12 @@ router.post('/api/login', async (req, res, next) => {
             
             // Send token as a cookie to the client
             const isSecure = process.env.NODE_ENV === 'production';
-            res.cookie('token', token, { httpOnly: true, secure: isSecure, maxAge: 3600000 });
+            res.cookie('token', token, {
+                httpOnly: true,
+                sameSite: 'None',
+                secure: true,
+                maxAge: 3600000 
+            });
             
             const { password: _, ...userData } = user;  // Exclude password from response
             res.status(200).json({ message: 'Login successful', user: userData });
@@ -86,7 +92,7 @@ router.get('/api/account', async (req, res, next) => {
 
 router.post('/api/work_entries/clock_in', async (req, res, next) => {
     const { employee_id, clock_in_location } = req.body;
-    console.log('received...');
+    console.log(req.headers.cookie);
 
     try {
         const clockInEntry = await db.one('INSERT INTO work_entries(employee_id, clock_in, clock_in_location) VALUES($1, NOW(), $2) RETURNING *', [employee_id, clock_in_location]);

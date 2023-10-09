@@ -1,6 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 
-const ACCOUNT_ENDPOINT = "https://localhost:8080/api/account";
+const ACCOUNT_ENDPOINT = "/api/account";
 const UserContext = createContext();
 
 export const useUser = () => {

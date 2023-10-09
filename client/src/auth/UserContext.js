@@ -1,6 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 
-const ACCOUNT_ENDPOINT = "/api/account";
 const UserContext = createContext();
 
 export const useUser = () => {
@@ -15,9 +14,8 @@ export const UserProvider = ({ children }) => {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const response = await fetch(ACCOUNT_ENDPOINT, {
+                const response = await fetch("/api/account", {
                     method: 'GET',
-                    mode: 'cors',
                     credentials: 'include',
                     headers: {
                         'Content-Type': 'application/json'

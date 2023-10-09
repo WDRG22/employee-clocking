@@ -8,29 +8,35 @@ const cookieParser = require('cookie-parser');
 const app = express();
 const routes = require('./routes.js');
 
-// Middleware
-app.use(express.json());
-app.use(routes);
-
-// Serve front-end build from server w/ express.static
-app.use(express.static(path.join(__dirname, '../client/build')));
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
-  });
-
-// JWT
+// Process JSON data
 app.use(cookieParser());
+app.use(express.json());
+
+// Logging
 app.use((req, res, next) => {
     console.log('Cookies:', req.cookies);
     next();
 });
+
+// Run JWT middleware if route requires auth
 app.use(expressjwt({
     secret: process.env.JWT_SECRET,
     algorithms: ['HS256'],
     getToken: req => req.cookies ? req.cookies.token : null
 }).unless({
-    path: ['/api/login', '/api/signup', /^\/static\/.*/]
+path: ['/api/login', '/api/signup', /^\/(?!api\/).*/]
 }));
+
+// Hit defined routes
+app.use(routes);
+
+// If no routes hit, serve static file
+app.use(express.static(path.join(__dirname, '../client/build')));
+
+// If no static file, serve index.html
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
+  });
 
 // Error-handling middleware
 app.use((error, req, res, next) => {

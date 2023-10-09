@@ -3,6 +3,7 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const pgp = require('pg-promise')();
+const crypto = require('crypto');
 
 const dbConfig = {
     host: 'localhost',
@@ -46,19 +47,29 @@ router.post('/api/login', async (req, res, next) => {
         const user = await db.oneOrNone('SELECT * FROM employees WHERE email = $1', [email]);
         
         if (user && await bcrypt.compare(password, user.password)) {
-            // Create JWT token from unique user id
+            
+            // Generate JWT token from unique user id
             const payload = {
                 userId: user.id // Use 'id' instead of '_id'
             };
             const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+            // Generate refresh token and insert into db w/ corresponding userid
+            const refreshToken = crypto.randomBytes(64).toString('hex');
+            await db.none('INSERT INTO refresh_tokens (token, user_id) VALUES ($1, $2)', [refreshToken, user.id]);
             
-            // Send token as a cookie to the client
-            const isSecure = process.env.NODE_ENV === 'production';
+            // Send tokens as cookies
             res.cookie('token', token, {
                 httpOnly: true,
                 sameSite: 'None',
                 secure: true,
-                maxAge: 3600000 
+                maxAge: 36000  // 1 hr
+            });
+            res.cookie('refreshToken', refreshToken, {
+                httpOnly: true,
+                sameSite: 'None',
+                secure: true,
+                maxAge: 7 * 24 * 3600000 // 1 week
             });
             
             const { password: _, ...userData } = user;  // Exclude password from response
@@ -71,26 +82,50 @@ router.post('/api/login', async (req, res, next) => {
     }
 });
 
-// Logout - NEED TO UPDATE CLIENT-SIDE HANDLING
-router.post('/api/logout', (req, res) => {
-    // Clear the JWT cookie
+// Logout
+router.post('/api/logout', async (req, res) => {
+    // Clear JWT and refresh token cookies
     res.clearCookie('token');
+    res.clearCookie('refreshToken');
+
+    const { refreshToken } = req.cookies;
+    if (refreshToken) {
+        await db.none('DELETE FROM refresh_tokens WHERE token = $1', [refreshToken]);
+    }
+
     res.status(200).json({ message: 'Logged out successfully' });
 });
 
 // Get user account data if logged in
 router.get('/api/account', async (req, res, next) => {
     try {
+        console.log('Hit /api/account endpoint');
+        // Check if user is authenticated
+        if (!req.user || !req.user.userId) {
+            return res.status(401).json({ error: 'Not authenticated' });
+        }
+
         const user = await db.oneOrNone('SELECT * FROM employees WHERE id = $1', [req.user.userId]);
+
+        // Check if user was found in the database
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
         const { password, ...userData } = user; 
         res.json({ user: userData });
     } catch (error) {
         console.log(error);
-        next(error);
+        if (error.message.includes('Not authenticated') || error.message.includes('User not found')) {
+            res.status(401).json({ error: error.message });
+        } else {
+            next(error);
+        }
     }
 });
 
-router.post('/api/work_entries/clock_in', async (req, res, next) => {
+// Clock-in
+router.post('/api/clock_in', async (req, res, next) => {
     const { employee_id, clock_in_location } = req.body;
     console.log(req.headers.cookie);
 
@@ -103,8 +138,8 @@ router.post('/api/work_entries/clock_in', async (req, res, next) => {
     }
 });
 
-// Clock-out route
-router.post('/api/work_entries/clock_out', async (req, res, next) => {
+// Clock-out
+router.post('/api/clock_out', async (req, res, next) => {
     const { entry_id, clock_out_location, tasks } = req.body;
     console.log('received...');
 
@@ -114,6 +149,31 @@ router.post('/api/work_entries/clock_out', async (req, res, next) => {
     } catch (error) {
         console.error(error);
         next(error);
+    }
+});
+
+// Refresh token
+router.post('/api/token/refresh', async (req, res, next) => {
+    const { refreshToken } = req.cookies;
+    
+    const storedToken = await db.oneOrNone('SELECT user_id FROM refresh_tokens WHERE token = $1', [refreshToken]);
+
+    if (storedToken) {
+        const payload = {
+            userId: storedToken.user_id
+        };
+        const newToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+        res.cookie('token', newToken, {
+            httpOnly: true,
+            sameSite: 'None',
+            secure: isSecure,
+            maxAge: 3600000 
+        });
+
+        res.status(200).json({ message: 'Token refreshed successfully' });
+    } else {
+        res.status(401).json({ message: 'Invalid refresh token' });
     }
 });
 

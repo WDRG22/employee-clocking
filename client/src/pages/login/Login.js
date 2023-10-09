@@ -4,8 +4,6 @@ import { useUser } from "../../auth/UserContext";
 import logo from "../../assets/cyntra_logo_white.png";
 import './Login.css';
 
-const LOGIN_ENDPOINT = "/api/login";
-
 export const Login = () => {
     const [data, setData] = useState({
         email: "test@test.com",
@@ -28,7 +26,7 @@ export const Login = () => {
         e.preventDefault();
     
         try {
-            const response = await fetch(LOGIN_ENDPOINT, {
+            const response = await fetch("/api/login", {
                 method: 'POST',
                 mode: 'cors',
                 headers: {

@@ -38,7 +38,6 @@ export const Login = () => {
             
             if (response.ok) {
                 const data = await response.json();
-                console.log("User data after successful login:", data.user);
                 setUser(data.user);
                 navigate('/');
             } else {

@@ -99,21 +99,36 @@ router.post('/api/logout', async (req, res) => {
 
 // Get user account data if logged in
 router.get('/api/account', async (req, res, next) => {
+    const employeeId = req.body.employeeId
     try {
         // Check if user is authenticated
         if (!req.user || !req.user.userId) {
             return res.status(401).json({ error: 'Not authenticated' });
         }
 
-        const user = await db.oneOrNone('SELECT * FROM employees WHERE employee_id = $1', [req.user.userId]);
+        // Get user data
+        const user = await db.oneOrNone(
+            'SELECT * FROM employees WHERE employee_id = $1',
+            [employeeId]
+        );
+
+        // Get last clocked in data
+        const lastClockIn = await db.oneOrNone(
+            `SELECT * FROM work_entries WHERE employee_id = $1 ORDER BY entry_id DESC LIMIT 1`,
+            [employeeId]
+        );
 
         // Check if user was found in the database
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
-        }
+        };
 
         const { password, ...userData } = user; 
-        res.json({ user: userData });
+
+        // Determine if user currently clocked in
+        const currentlyClockedIn = lastClockIn && !lastClockIn.clock_out_time;
+
+        res.json({ user: userData, isClockedIn: currentlyClockedIn });
     } catch (error) {
         console.log(error);
         if (error.message.includes('Not authenticated') || error.message.includes('User not found')) {
@@ -124,13 +139,27 @@ router.get('/api/account', async (req, res, next) => {
     }
 });
 
-// Clock-in
+// Clock in
 router.post('/api/clock_in', async (req, res, next) => {
-    const { employee_id, clock_in_location } = req.body;
-    console.log(req.headers.cookie);
+    const { employeeId, currentTime, location } = req.body;
+    const locationPoint = `(${location.latitude}, ${location.longitude})`;
 
     try {
-        const clockInEntry = await db.one('INSERT INTO work_entries(employee_id, clock_in, clock_in_location) VALUES($1, NOW(), $2) RETURNING *', [employee_id, clock_in_location]);
+        // Check for an incomplete entry for the user
+        const incompleteEntry = await db.oneOrNone(
+            'SELECT * FROM work_entries WHERE employee_id = $1 AND clock_out_time IS NULL',
+            [employeeId]
+        );
+
+        if (incompleteEntry) {
+            // If incomplete entry found, prevent clock-in
+            return res.status(400).json({ message: 'You need to clock out before clocking in again.' });
+        }
+
+        const clockInEntry = await db.one(
+            'INSERT INTO work_entries(employee_id, clock_in_time, clock_in_location) VALUES($1, $2, $3) RETURNING *',
+            [employeeId, currentTime, locationPoint]
+        );
         res.status(200).json({ message: 'Clocked in successfully', clockInEntry });
     } catch (error) {
         console.error(error);
@@ -140,11 +169,23 @@ router.post('/api/clock_in', async (req, res, next) => {
 
 // Clock-out
 router.post('/api/clock_out', async (req, res, next) => {
-    const { entry_id, clock_out_location, tasks } = req.body;
-    console.log('received...');
+    const { employeeId, currentTime, location } = req.body;
+    const locationPoint = `(${location.latitude}, ${location.longitude})`;
+    const tasks = "Example tasks";
 
     try {
-        const clockOutEntry = await db.one('UPDATE work_entries SET clock_out = NOW(), clock_out_location = $2, tasks = $3 WHERE entry_id = $1 RETURNING *', [entry_id, clock_out_location, tasks]);
+        const clockOutEntry = await db.oneOrNone(
+            `UPDATE work_entries 
+             SET clock_out_time = $2, clock_out_location = $3, tasks = $4
+             WHERE employee_id = $1 AND clock_out_time IS NULL
+             RETURNING *`,
+            [employeeId, currentTime, locationPoint, tasks]
+        );
+
+        if (!clockOutEntry) {
+            return res.status(400).json({ message: 'No active session to clock out from.' });
+        }
+
         res.status(200).json({ message: 'Clocked out successfully', clockOutEntry });
     } catch (error) {
         console.error(error);

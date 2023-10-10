@@ -43,13 +43,18 @@ app.use((req, res, next) => {
 // Hit defined routes
 app.use(routes);
 
-// If no routes hit, serve static file
+// Serve static files
 app.use(express.static(path.join(__dirname, '../client/build')));
 
-// If no static file, serve index.html
-app.get('*', (req, res) => {
+// Serve SPA for client-side routes
+app.get(['/login', '/signup'], (req, res) => {
     res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
-  });
+});
+
+// Catch-all for 404
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../client/build', '404.html'));
+});
 
 // Error-handling middleware
 app.use((error, req, res, next) => {

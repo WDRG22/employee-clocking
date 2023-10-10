@@ -9,6 +9,7 @@ export const useUser = () => {
 
 export const UserProvider = ({ children }) => {
     const [user, setUser] = useState(null);
+    const [isClockedIn, setIsClockedIn] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
     // Fetch userData when component mounts
@@ -25,8 +26,10 @@ export const UserProvider = ({ children }) => {
 
                 if (response.ok) {
                     const data = await response.json();
-                    console.log(data)
                     setUser(data.user);
+                    setIsClockedIn(data.isClockedIn);
+                    console.log('HERE')
+                    console.log(data)
                 } else {
                     setUser(null);
                 }
@@ -37,9 +40,8 @@ export const UserProvider = ({ children }) => {
                 setIsLoading(false)
             }
         };
-
         fetchUserData();
-    }, [setUser]);
+    }, [setUser, setIsClockedIn]);
 
     return (
         <UserContext.Provider value={{ user, setUser, isLoading }}>

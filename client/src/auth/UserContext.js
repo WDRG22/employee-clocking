@@ -14,9 +14,7 @@ export const UserProvider = ({ children }) => {
 
     // Fetch userData when component mounts
     useEffect(() => {
-        console.log("userProvider useEffect");
         const fetchUserData = async () => {
-            console.log("fetchUserData")
             try {
                 const response = await fetchWithTokenRefresh("/api/account", {
                     method: 'GET',
@@ -31,7 +29,7 @@ export const UserProvider = ({ children }) => {
                     const data = await response.json();
                     setUser(data.user);
                     setIsClockedIn(data.isClockedIn);
-                    console.log(data)
+                    console.log("fetchUserData data: ", data)
                 } else {
                     setUser(null);
                 }

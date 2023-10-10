@@ -151,11 +151,11 @@ router.post('/api/clock_in', async (req, res, next) => {
             return res.status(400).json({ message: 'You need to clock out before clocking in again.' });
         }
 
-        const clockInEntry = await db.one(
+        const clockEntry = await db.one(
             'INSERT INTO work_entries(user_id, clock_in_time, clock_in_location) VALUES($1, $2, $3) RETURNING *',
             [userId, currentTime, locationPoint]
         );
-        res.status(200).json({ message: 'Clocked in successfully', clockInEntry, isClockedIn: true });
+        res.status(200).json({ message: 'Clocked in', clockEntry, isClockedIn: true });
     } catch (error) {
         console.error(error);
         next(error);
@@ -169,7 +169,7 @@ router.post('/api/clock_out', async (req, res, next) => {
     const tasks = "Example tasks";
 
     try {
-        const clockOutEntry = await db.oneOrNone(
+        const clockEntry = await db.oneOrNone(
             `UPDATE work_entries 
              SET clock_out_time = $2, clock_out_location = $3, tasks = $4
              WHERE user_id = $1 AND clock_out_time IS NULL
@@ -177,11 +177,12 @@ router.post('/api/clock_out', async (req, res, next) => {
             [userId, currentTime, locationPoint, tasks]
         );
 
-        if (!clockOutEntry) {
+        if (!clockEntry) {
             return res.status(400).json({ message: 'No active session to clock out from.' });
         }
+        console.log(clockEntry)
 
-        res.status(200).json({ message: 'Clocked out successfully', clockOutEntry, isClockedIn: false });
+        res.status(200).json({ message: 'Clocked out', clockEntry, isClockedIn: false });
     } catch (error) {
         console.error(error);
         next(error);

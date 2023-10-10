@@ -1,22 +1,43 @@
 .dashboard .dashboardContainer {
+    background-color: #333;
+    height: 90vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    background-color: #333;
 }
 
+.dashboard .userName, 
 .dashboard .timeDisplay {
-    color: white;
-    font-size: 48px;
-    margin: 15px 0;
+    color: #f4f4f4;
+}
+
+.dashboard .timeDisplay,
+.dashboard .clockStatus {
+    font-size: 24px;
+    margin: 10px 0;
+}
+
+.dashboard .clockStatus {
+    font-size: 20px;
+    padding: 5px 15px;
+    border-radius: 5px;
+    margin-top: 20px;
+}
+
+.dashboard .clockStatus.ClockedIn {
+    background-color: #4caf50;
+}
+
+.dashboard .clockStatus.ClockedOut {
+    background-color: #f44336;
 }
 
 .dashboard .buttonGroup {
     display: flex;
     justify-content: center;
     align-items: center;
+    margin-top: 20px;
 }
 
 .dashboard .button {
@@ -28,8 +49,15 @@
     color: white;
     font-weight: bold;
     cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.2s;
 }
 
 .dashboard .button:hover {
     background-color: #0056b3;
+}
+
+.dashboard .button:disabled {
+    background-color: #A9A9A9;
+    cursor: not-allowed;
 }

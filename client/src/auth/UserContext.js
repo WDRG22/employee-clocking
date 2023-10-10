@@ -14,7 +14,9 @@ export const UserProvider = ({ children }) => {
 
     // Fetch userData when component mounts
     useEffect(() => {
+        console.log("userProvider useEffect");
         const fetchUserData = async () => {
+            console.log("fetchUserData")
             try {
                 const response = await fetchWithTokenRefresh("/api/account", {
                     method: 'GET',
@@ -23,12 +25,12 @@ export const UserProvider = ({ children }) => {
                         'Content-Type': 'application/json'
                     }
                 });
-
+                console.log('response', response)
+                
                 if (response.ok) {
                     const data = await response.json();
                     setUser(data.user);
                     setIsClockedIn(data.isClockedIn);
-                    console.log('HERE')
                     console.log(data)
                 } else {
                     setUser(null);
@@ -44,7 +46,7 @@ export const UserProvider = ({ children }) => {
     }, [setUser, setIsClockedIn]);
 
     return (
-        <UserContext.Provider value={{ user, setUser, isLoading }}>
+        <UserContext.Provider value={{ user, setUser, isLoading, isClockedIn, setIsClockedIn }}>
             {children}
         </UserContext.Provider>
     );

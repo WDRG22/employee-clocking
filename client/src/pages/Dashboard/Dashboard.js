@@ -5,7 +5,13 @@ import { fetchWithTokenRefresh } from '../../utils/apiUtils';
 import Loading from '../../components/loading/Loading';
 import './Dashboard.css';
 
-const useClock = (employeeId) => {
+const useClock = (userId, setIsClockedIn) => {
+    const [clockResult, setClockResult] = useState(null);
+    
+    const resetClockResult = () => {
+        setClockResult(null);
+    };
+
     const getLocation = () => {
         return new Promise((resolve, reject) => {
             navigator.geolocation.getCurrentPosition(position => {
@@ -17,8 +23,8 @@ const useClock = (employeeId) => {
         });
     };
 
-    const clock = async (endpoint, employeeId, currentTime, location) => {
-        const payload = { employeeId, currentTime, location };
+    const clock = async (endpoint, userId, currentTime, location) => {
+        const payload = { userId, currentTime, location };
         try {
             const response = await fetchWithTokenRefresh(endpoint, {
                 method: 'POST',
@@ -27,29 +33,29 @@ const useClock = (employeeId) => {
                 body: JSON.stringify(payload)
             });
             const data = await response.json();
-            console.log(data);
+            setClockResult(data.message)
+            setIsClockedIn(data.isClockedIn)
         } catch (error) {
-            console.error(`Error during ${endpoint === '/api/clock_in' ? "clock-in" : "clock-out"}:`, error);
-        }
+            setClockResult("An error occurred. Please try again.");        }
     };
 
     const handleClockIn = async () => {
         const location = await getLocation();
-        clock('/api/clock_in', employeeId, new Date(), location);
+        clock('/api/clock_in', userId, new Date(), location);
     };
 
     const handleClockOut = async () => {
         const location = await getLocation();
-        clock('/api/clock_out', employeeId, new Date(), location);
+        clock('/api/clock_out', userId, new Date(), location);
     };
 
-    return [handleClockIn, handleClockOut];
+    return [handleClockIn, handleClockOut, clockResult, resetClockResult];
 };
 
 export const Dashboard = () => {
-    const { user, isClockedIn, isLoading } = useUser();
+    const { user, isLoading, isClockedIn, setIsClockedIn } = useUser();
     const [date, setDate] = useState(new Date());
-    const [handleClockIn, handleClockOut] = useClock(user.employee_id);
+    const [handleClockIn, handleClockOut,  clockResult, resetClockResult] = useClock(user.user_id, setIsClockedIn);
 
     useEffect(() => {
         const timer = setInterval(() => setDate(new Date()), 1000);
@@ -62,10 +68,10 @@ export const Dashboard = () => {
         <div className='dashboard'>
             <Header />
             <div className="dashboardContainer">
-                <h1>{user.first_name} {user.last_name}</h1>
+                <h1 className='userName'>{user.first_name} {user.last_name}</h1>
                 <div className='timeDisplayContainer'>
-                    <p className="timeDisplay">Local Time : {date.toLocaleTimeString()}</p>
                     <p className="timeDisplay">Local Date : {date.toLocaleDateString()}</p>
+                    <p className="timeDisplay">Local Time : {date.toLocaleTimeString()}</p>                                        
                 </div>
                 <div className="buttonGroup">
                     <button
@@ -78,11 +84,14 @@ export const Dashboard = () => {
                     <button
                         className="button" 
                         onClick={handleClockOut}
-                        // disabled={!isClockedIn ? true : null}
+                        disabled={!isClockedIn ? true : null}
                     >
                         Clock Out
                     </button>
                 </div>
+                <div className={`clockStatus ${isClockedIn ? 'ClockedIn' : 'ClockedOut'}`}>
+                        {isClockedIn ? 'Clocked In' : 'Clocked Out'}
+                    </div>
             </div>
         </div>
     );

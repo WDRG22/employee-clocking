@@ -8,12 +8,11 @@ const cookieParser = require('cookie-parser');
 const app = express();
 const routes = require('./routes.js');
 
-
 // Process JSON data
 app.use(cookieParser());
 app.use(express.json());
 
-// Manual jwt verification
+// Manual jwt verification. Decodes token to 'req.user' for use in routes
 const jwt = require('jsonwebtoken');
 app.use((req, res, next) => {
     const token = req.cookies.token;

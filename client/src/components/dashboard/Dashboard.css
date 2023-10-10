@@ -1,6 +1,13 @@
+.dashboard {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .dashboard .dashboardContainer {
     background-color: #333;
-    height: 90vh;
+    height: 92vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -101,13 +108,11 @@
         padding: 0.3125rem 0.625rem;
     }
 
+    .dashboard .buttonGroup {
+        flex-direction: column;
+    }
+
     .dashboard .resultEntryLine {
         margin: 0.3125rem;
-    }
-}
-
-@media only screen and (max-width: 768px) and (min-width: 601px) {
-    .dashboard .button {
-        width: 60vw;
     }
 }

@@ -7,7 +7,7 @@
     padding-top: 10vh;
     height: 100vh; 
     background-color: #333;
-    gap: 50px;
+    gap: 2rem;
 }
 
 .login .logo {
@@ -15,29 +15,32 @@
     margin: 0 auto;
     max-width: 100%;
     height: auto;
-    width: 300px;
+    width: 18.75rem; /* 300px */
 }
 
 .login .loginForm {
     text-align: left;
     background: #444;
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-    width: 300px;
+    padding: 1.25rem; /* 20px */
+    border-radius: 0.3125rem;
+    box-shadow: 0 0.125rem 0.3125rem rgba(0,0,0,0.5);
+    width: 18.75rem;
 }
 
 .login .header {
     color: white;
+    background-color: #444;
+    box-shadow: none;
     text-align: center;
+    margin-bottom: 0;
 }
 
 .login .input {
     width: 95%;
-    padding: 10px;
-    margin: 10px 0;
+    padding: 0.625rem; /* 10px */
+    margin: 0.625rem 0;
     border: 1px solid #555;
-    border-radius: 5px;
+    border-radius: 0.3125rem;
     background-color: #555;
     color: white;
 }
@@ -48,10 +51,10 @@
 
 .login .button {
     width: 100%;
-    padding: 10px;
+    padding: 0.625rem;
     background-color: #007BFF;
     border: none;
-    border-radius: 5px;
+    border-radius: 0.3125rem;
     color: white;
     font-weight: bold;
     cursor: pointer;
@@ -63,7 +66,7 @@
 
 .login .createAccountLink {
     display: block;
-    margin-top: 10px;
+    margin-top: 0.625rem;
     text-align: center;
     text-decoration: none;
     color: #007BFF;
@@ -77,5 +80,35 @@
     display: flex;
     align-items: center;
     color: white;
-    margin: 10px 0;
+    margin: 0.625rem 0;
+}
+
+/* Responsive Styles */
+@media (max-width: 480px) {
+    .login {
+        padding: 5vh 1rem;
+    }
+
+    .login .logo {
+        width: 70vw;
+    }
+
+    .login .loginForm {
+        width: 90vw;
+        padding: 1rem;
+    }
+
+    .login .input {
+        width: 100%;
+    }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+    .login .logo {
+        width: 80vw;
+    }
+
+    .login .loginForm {
+        width: 70vw;
+    }
 }

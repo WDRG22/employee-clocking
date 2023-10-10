@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../auth/UserContext';
 import { fetchWithTokenRefresh } from '../../utils/apiUtils';
@@ -8,6 +8,7 @@ import './Header.css';
 const Header = () => {
     const navigate = useNavigate();
     const { setUser } = useUser();
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
     const logout = async () => {
         try {
@@ -20,7 +21,6 @@ const Header = () => {
             });
     
             if (response.status === 200) {
-                console.log('Logged out successfully');
                 setUser(null);
                 navigate('/login');
             } else {
@@ -37,17 +37,27 @@ const Header = () => {
         <div className='header'>
             <div className="headerContainer">
                 <div className='headerLeft'>
-                    <button className="logoButton">
-                        <img className='logoImage' src={logo} alt="Cyntra"/>
-                    </button>
+                    <img className='logoImage' src={logo} alt="Cyntra"/>
                     <div className="navigationButtons">
-                        <button className="navButton" onClick={() => navigate('/')}>Homepage</button>
+                        <button className="navButton" onClick={() => navigate('/')}>Dashboard</button>
                         <button className="navButton" onClick={() => navigate('/account')}>Account</button>
                     </div>
-                </div>
+                </div>    
                 <div className='headerRight'>
-                    <button className="logoutButton" onClick={logout}>Logout</button>
+                    <div className='navigationButtons'>
+                        <button className="logoutButton" onClick={logout}>Logout</button>
+                    </div>
                 </div>
+            </div>
+            <div className='mobileHeaderContainer'>
+                <img className='logoImage' src={logo} alt="Cyntra"/>
+                <button onClick={() => setIsDropdownOpen(!isDropdownOpen)} className="menuToggle">☰</button>
+                {isDropdownOpen && 
+                <div className="mobileDropdown">
+                    <button className="mobileNavButton" onClick={() => navigate('/')}>Dashboard</button>
+                    <button className="mobileNavButton" onClick={() => navigate('/account')}>Account</button>
+                    <button className="mobileLogoutButton" onClick={logout}>Logout</button>
+                </div>}
             </div>
         </div>
     );

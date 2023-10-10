@@ -23,13 +23,11 @@ export const UserProvider = ({ children }) => {
                         'Content-Type': 'application/json'
                     }
                 });
-                console.log('response', response)
                 
                 if (response.ok) {
                     const data = await response.json();
                     setUser(data.user);
                     setIsClockedIn(data.isClockedIn);
-                    console.log("fetchUserData data: ", data)
                 } else {
                     setUser(null);
                 }

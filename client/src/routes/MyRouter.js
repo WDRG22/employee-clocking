@@ -1,9 +1,9 @@
 import React from "react";
 import {BrowserRouter, Routes, Route, Navigate} from "react-router-dom";
 import { useUser } from "../auth/UserContext";
-import Dashboard from '../pages/dashboard/Dashboard';
-import Login from '../pages/login/Login';
-import Signup from '../pages/signup/Signup';
+import Dashboard from '../components/dashboard/Dashboard';
+import Login from '../components/login/Login';
+import Signup from '../components/signup/Signup';
 
 const PrivateRoute = ({ children }) => {
     const { user } = useUser();

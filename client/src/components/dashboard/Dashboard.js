@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Header from '../../components/header/Header';
+import Header from '../header/Header';
 import { useUser } from "../../auth/UserContext";
 import { fetchWithTokenRefresh } from '../../utils/apiUtils';
 import './Dashboard.css';

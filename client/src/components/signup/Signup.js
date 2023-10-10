@@ -13,9 +13,11 @@ export const Signup = () => {
         password: "",
         passwordVerify: ""
     });
-    const [emailError, setEmailError] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
     const { firstName, lastName, email, password, passwordVerify } = data;
     const navigate = useNavigate();
+
+    const clearErrorMessage = () => setErrorMessage('');
 
     const changeHandler = e => {
         setData({ ...data, [e.target.name]: e.target.value });
@@ -28,19 +30,20 @@ export const Signup = () => {
 
     const submitHandler = async e => {
         e.preventDefault();
+        clearErrorMessage();
 
         if (!firstName || !lastName) {
-            alert("Please provide both first and last name.");
+            setErrorMessage("Please provide both first and last name.");
             return;
         }
 
         if (!isValidEmail(email)) {
-            alert("Please provide a valid email address.");
+            setErrorMessage("Please provide a valid email address.");
             return;
         }
 
         if (password !== passwordVerify) {
-            alert("Passwords do not match. Please try again.");
+            setErrorMessage("Passwords do not match. Please try again.");
             return;
         }
 
@@ -56,15 +59,14 @@ export const Signup = () => {
             const responseData = await response.json();
 
             if (response.ok) {
-                console.log("Signup successful:", responseData);
                 navigate('/login');
             } else {
-                setEmailError(responseData.message);
+                setErrorMessage(responseData.message);
             }
 
         } catch (err) {
             console.error("An error occurred:", err);
-            alert("Failed to connect to the server. Please try again.");
+            setErrorMessage("Failed to connect to the server. Please try again.");
         }
     }
 
@@ -76,7 +78,7 @@ export const Signup = () => {
                 <input className="input" type="text" name="firstName" value={firstName} onChange={changeHandler} placeholder="First Name" />
                 <input className="input" type="text" name="lastName" value={lastName} onChange={changeHandler} placeholder="Last Name" />
                 <input 
-                    className={`input ${emailError ? 'error' : ''}`} 
+                    className={`input ${errorMessage ? 'error' : ''}`} 
                     type="email" 
                     name="email" 
                     value={email} 
@@ -85,7 +87,7 @@ export const Signup = () => {
                 />
                 <input className="input" type="password" name="password" value={password} onChange={changeHandler} placeholder="Password" />
                 <input className="input" type="password" name="passwordVerify" value={passwordVerify} onChange={changeHandler} placeholder="Verify Password" />
-                {emailError && <p style={{ color: 'red', fontWeight: 'bold' }}>{emailError}</p>}
+                {errorMessage && <p style={{ color: 'red', fontWeight: 'bold' }}>{errorMessage}</p>}
                 <button className="button" type="submit">Signup</button>
                 <Link className="signInLink" to="/login">Already have an account? Sign In</Link>
             </form>

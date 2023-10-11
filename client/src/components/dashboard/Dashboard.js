@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Header from '../header/Header';
 import { useUser } from "../../auth/UserContext";
 import { fetchWithTokenRefresh } from '../../utils/apiUtils';
+import DateTime from '../dateTime/DateTime';
 import './Dashboard.css';
 
 // Hook for getting user location
@@ -19,13 +20,12 @@ const useLocation = () => {
     return getLocation;
 };
 
-const useClock = (userId, setIsClockedIn, setErrorMessage) => {
+const useClock = (user, setUser, setErrorMessage) => {
     const [clockEntry, setClockEntry] = useState(null);  
     const getLocation = useLocation();
 
     const clock = async (endpoint, userId, currentTime, location, tasks) => {
-        const payload = endpoint === '/api/work_entries/clock_in' ? { userId, currentTime, location } : { userId, currentTime, location, tasks };
-        console.log("clock() payload: ", payload)
+    const payload = endpoint === '/api/work_entries/clock_in' ? { userId, currentTime, location } : { userId, currentTime, location, tasks };
 
         try {
             const response = await fetchWithTokenRefresh(endpoint, {
@@ -35,9 +35,11 @@ const useClock = (userId, setIsClockedIn, setErrorMessage) => {
                 body: JSON.stringify(payload)
             });
             const data = await response.json();
-            console.log("clock() data: ", data)
+            setUser({
+                ...user,
+                isClockedIn: data.isClockedIn
+            });
             setClockEntry(data.clockEntry)
-            setIsClockedIn(data.isClockedIn)
         } catch (error) {
             console.log(error)
         }
@@ -45,7 +47,7 @@ const useClock = (userId, setIsClockedIn, setErrorMessage) => {
 
     const handleClockIn = async () => {
         const location = await getLocation();
-        clock('/api/work_entries/clock_in', userId, new Date(), location);
+        clock('/api/work_entries/clock_in', user.user_id, new Date(), location);
     };
 
     const handleClockOut = async (tasks) => {
@@ -55,7 +57,7 @@ const useClock = (userId, setIsClockedIn, setErrorMessage) => {
         }
         setErrorMessage('');  // Clearing error message if the input is valid
         const location = await getLocation();
-        clock('/api/work_entries/clock_out', userId, new Date(), location, tasks);
+        clock('/api/work_entries/clock_out', user.user_id, new Date(), location, tasks);
     };    
 
     return {
@@ -64,14 +66,6 @@ const useClock = (userId, setIsClockedIn, setErrorMessage) => {
         clockEntry
     };
 };
-
-// Time Display component
-const TimeDisplay = ({ date }) => (
-    <div className='timeDisplayContainer'>
-        <p className="timeDisplay">Local Date : {date.toLocaleDateString()}</p>
-        <p className="timeDisplay">Local Time : {date.toLocaleTimeString()}</p>                                        
-    </div>
-);
 
 // Clock Status component
 const ClockStatus = ({ isClockedIn, handleClockIn, handleClockOut, tasks }) => (
@@ -108,29 +102,21 @@ const TaskEntry = ({ tasks, setTasks }) => (
 );
 
 export const Dashboard = () => {
-    const { user, setIsClockedIn } = useUser();
+    const { user, setUser } = useUser();
 
     // Local state for Dashboard component
-    const [date, setDate] = useState(new Date());
     const [tasks, setTasks] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
 
     // Utility functions for clocking in and out
-    const { handleClockIn, handleClockOut, clockEntry }  = useClock(user.user_id, setIsClockedIn, setErrorMessage);
-
-    // Update time and date each second
-    useEffect(() => {
-        console.log("user.isClockedIn: ", user.isClockedIn)
-        const timer = setInterval(() => setDate(new Date()), 1000);
-        return () => clearInterval(timer);
-    }, []);
+    const { handleClockIn, handleClockOut, clockEntry }  = useClock(user, setUser, setErrorMessage);
 
     return (
         <div className='dashboard'>
             <Header />
             <div className="dashboardContainer">
                 <h1 className='userName'>{user.first_name} {user.last_name}</h1>
-                <TimeDisplay date={date} />
+                <DateTime />
                 <ClockStatus isClockedIn={user.isClockedIn} handleClockIn={handleClockIn} handleClockOut={handleClockOut} tasks={tasks} />
                 {clockEntry && <ClockEntry clockEntry={clockEntry} />}                
                 {user.isClockedIn && <TaskEntry tasks={tasks} setTasks={setTasks} />}

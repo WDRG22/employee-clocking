@@ -19,7 +19,6 @@ app.use((req, res, next) => {
         try {
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
             req.user = decoded;
-            console.log("decoded token req.user: ", req.user)
             next();
         } catch (err) {
             // handle the error (invalid token, etc.)

@@ -12,7 +12,7 @@ export const Login = () => {
         showPassword: false,
     });
     const [incorrectDetailsError, setIncorrectDetailsError] = useState('')
-    const { setUser, setIsClockedIn } = useUser();
+    const { setUser } = useUser();
     const { email, password, showPassword } = data;
     const navigate = useNavigate();
 
@@ -23,6 +23,7 @@ export const Login = () => {
 
     // Submit login info to server
     const submitHandler = async e => {
+        console.log('calling login submitHandler...')         
         e.preventDefault();
     
         try {
@@ -36,8 +37,10 @@ export const Login = () => {
             
             const data = await response.json();
             if (response.ok) {
-                setUser(data.user);
-                setIsClockedIn(data.isClockedIn)
+                setUser({
+                    ...data.user,
+                    isClockedIn: data.isClockedIn
+                });
                 navigate('/');
             } else {
                 setIncorrectDetailsError(data.message);

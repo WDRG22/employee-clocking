@@ -13,15 +13,6 @@ export const UserProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
-    const setIsClockedIn = (status) => {
-        if (user) {
-            setUser(user => ({
-                ...user,
-                isClockedIn: status
-            }));
-        }
-    };
-
     // Fetch userData when component mounts
     useEffect(() => {
         const fetchUserData = async () => {
@@ -35,9 +26,11 @@ export const UserProvider = ({ children }) => {
                 });
                 
                 if (response.ok) {
-                    const data = await response.json();          
-                    setUser(data.user);
-                    setIsClockedIn(data.isClockedIn)
+                    const data = await response.json();                     
+                    setUser({
+                        ...data.user,
+                        isClockedIn: data.isClockedIn
+                    });
                 } else {
                     setUser(null);
                 }
@@ -49,10 +42,10 @@ export const UserProvider = ({ children }) => {
             }
         };
         fetchUserData();
-    }, [setUser]);
+    }, []);
 
     return (
-        <UserContext.Provider value={{ user, setUser, isLoading, setIsClockedIn }}>
+        <UserContext.Provider value={{ user, setUser, isLoading }}>
             {isLoading ? <TailSpin className='loadingSpinner'/> : children}
         </UserContext.Provider>
     );

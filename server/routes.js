@@ -195,6 +195,21 @@ router.post('/api/work_entries/clock_out', async (req, res, next) => {
     }
 });
 
+// Get user's work entries
+router.get('/api/work_entries/user', async (req, res, next) => {
+    const userId = req.user.user_id;
+
+    try {
+        const query = 'SELECT * FROM work_entries WHERE user_id = $1';
+        const result = await pool.query(query, [userId]);
+
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching work entries:', error);
+        res.status(500).json({ error: 'Failed to fetch work entries' });
+    };
+});
+
 // Refresh token
 router.post('/api/refresh_tokens/refresh', async (req, res, next) => {
     const { refreshToken } = req.cookies;

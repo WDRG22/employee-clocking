@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Header from '../header/Header';
 import './Account.css';
+import { fetchWithTokenRefresh } from '../../utils/apiUtils';
 
 export const Account = () => {
     const [workEntries, setWorkEntries] = useState([]);
@@ -8,8 +9,7 @@ export const Account = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        // For this example, I'm assuming you have an endpoint like /api/work_entries
-        fetch('/api/work_entries/user')
+        fetchWithTokenRefresh('/api/work_entries/user')
             .then((response) => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');

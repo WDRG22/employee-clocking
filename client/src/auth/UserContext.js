@@ -17,7 +17,6 @@ export const UserProvider = ({ children }) => {
     // Fetch userData when component mounts
     useEffect(() => {
         const fetchUserData = async () => {
-            console.log("UserContext fetchUserData")
             try {
                 const response = await fetchWithTokenRefresh("/api/users/user", {
                     method: 'GET',
@@ -26,7 +25,6 @@ export const UserProvider = ({ children }) => {
                         'Content-Type': 'application/json'
                     }
                 });
-                console.log('fetchUserData response: ', response);
                 
                 if (response.ok) {
                     const data = await response.json();          

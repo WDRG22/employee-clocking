@@ -35,6 +35,7 @@ export const Login = () => {
                 },
                 body: JSON.stringify({ email, password }),
             });
+            console.log("Response: ", response)
             
             if (response.ok) {
                 const data = await response.json();

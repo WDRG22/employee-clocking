@@ -93,8 +93,8 @@ router.post('/api/logout', async (req, res) => {
     res.status(200).json({ message: 'Logged out successfully' });
 });
 
-// Get user account data if logged in
-router.get('/api/account', async (req, res, next) => {
+// Get user user data if logged in
+router.get('/api/user', async (req, res, next) => {
     const userId = req.user ? req.user.userId : null;
 
     try {
@@ -164,9 +164,8 @@ router.post('/api/clock_in', async (req, res, next) => {
 
 // Clock-out
 router.post('/api/clock_out', async (req, res, next) => {
-    const { userId, currentTime, location } = req.body;
+    const { userId, currentTime, location, tasks } = req.body;
     const locationPoint = `(${location.latitude}, ${location.longitude})`;
-    const tasks = "Example tasks";
 
     try {
         const clockEntry = await db.oneOrNone(

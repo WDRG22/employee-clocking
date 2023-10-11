@@ -4,7 +4,7 @@ import { useUser } from "../../auth/UserContext";
 import { fetchWithTokenRefresh } from '../../utils/apiUtils';
 import './Dashboard.css';
 
-const useClock = (userId, setIsClockedIn) => {
+const useClock = (userId, setIsClockedIn, setErrorMessage) => {
     const [clockEntry, setClockEntry] = useState(null);  
 
     const getLocation = () => {
@@ -18,8 +18,9 @@ const useClock = (userId, setIsClockedIn) => {
         });
     };
 
-    const clock = async (endpoint, userId, currentTime, location) => {
-        const payload = { userId, currentTime, location };
+    const clock = async (endpoint, userId, currentTime, location, tasks) => {
+        const payload = endpoint === '/api/clock_in' ? { userId, currentTime, location } : { userId, currentTime, location, tasks };
+        console.log("payload: ", payload)
         try {
             const response = await fetchWithTokenRefresh(endpoint, {
                 method: 'POST',
@@ -40,10 +41,15 @@ const useClock = (userId, setIsClockedIn) => {
         clock('/api/clock_in', userId, new Date(), location);
     };
 
-    const handleClockOut = async () => {
+    const handleClockOut = async (tasks) => {
+        if (!tasks.trim()) {
+            setErrorMessage("Please enter the tasks you've worked on before clocking out.");
+            return;
+        }
+        setErrorMessage('');  // Clearing error message if the input is valid
         const location = await getLocation();
-        clock('/api/clock_out', userId, new Date(), location);
-    };
+        clock('/api/clock_out', userId, new Date(), location, tasks);
+    };    
 
     return [handleClockIn, handleClockOut, clockEntry];
 };
@@ -51,7 +57,9 @@ const useClock = (userId, setIsClockedIn) => {
 export const Dashboard = () => {
     const { user, isClockedIn, setIsClockedIn } = useUser();
     const [date, setDate] = useState(new Date());
-    const [handleClockIn, handleClockOut, clockEntry, ] = useClock(user.user_id, setIsClockedIn);
+    const [tasks, setTasks] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
+    const [handleClockIn, handleClockOut, clockEntry, ] = useClock(user.user_id, setIsClockedIn, setErrorMessage);
 
 
     useEffect(() => {
@@ -70,22 +78,22 @@ export const Dashboard = () => {
                 </div>
                 <div className={`clockStatus ${isClockedIn ? 'ClockedIn' : 'ClockedOut'}`}>
                     {`${isClockedIn? "Clocked In" : "Clocked Out" }`}
-                <div className="buttonGroup">
-                    <button
-                        className="button" 
-                        onClick={handleClockIn}
-                        disabled={isClockedIn ? true : null}
-                    >
-                        Clock In
-                    </button>
-                    <button
-                        className="button" 
-                        onClick={handleClockOut}
-                        disabled={!isClockedIn ? true : null}
-                    >
-                        Clock Out
-                    </button>
-                </div>
+                    <div className="buttonGroup">
+                        <button
+                            className="button" 
+                            onClick={handleClockIn}
+                            disabled={isClockedIn ? true : null}
+                        >
+                            Clock In
+                        </button>
+                        <button
+                            className="button" 
+                            onClick={() => handleClockOut(tasks)}
+                            disabled={!isClockedIn ? true : null}
+                        >
+                            Clock Out
+                        </button>
+                    </div>
                 </div>
                 {
                     clockEntry && (
@@ -95,7 +103,20 @@ export const Dashboard = () => {
                             {clockEntry.clock_out_time && <p className='resultEntryLine'>{`Hours Worked : ${clockEntry.hours_worked}`}</p>}
                         </div>
                     )
-                }
+                }                
+                {isClockedIn && (
+                    <div className="taskEntry">
+                        <textarea
+                            id="tasks"
+                            value={tasks}
+                            onChange={e => setTasks(e.target.value)}
+                            rows="4"
+                            cols="50"
+                            placeholder="Describe the tasks you've worked on today before clocking out..."
+                        />
+                    </div>
+                )}
+                {errorMessage && <div className="error-message">{errorMessage}</div>}
             </div>
         </div>
     );

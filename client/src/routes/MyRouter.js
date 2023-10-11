@@ -1,9 +1,11 @@
 import React from "react";
 import {BrowserRouter, Routes, Route, Navigate} from "react-router-dom";
-import { useUser } from "../auth/UserContext";
 import Dashboard from '../components/dashboard/Dashboard';
-import Login from '../components/login/Login';
 import Signup from '../components/signup/Signup';
+import Login from '../components/login/Login';
+import Account from '../components/account/Account';
+import AdminDashboard from '../components/adminDashboard/AdminDashboard';
+import { useUser } from "../auth/UserContext";
 
 const PrivateRoute = ({ children }) => {
     const { user } = useUser();
@@ -12,11 +14,7 @@ const PrivateRoute = ({ children }) => {
 }
 
 function MyRouter() {
-    const { user, isLoading } = useUser();
-
-    if (isLoading) {
-        return <div>Loading...</div>; // or your preferred loading indicator
-    }
+    const { user } = useUser();
 
     return (
         <BrowserRouter>
@@ -24,12 +22,21 @@ function MyRouter() {
                 <Route path="/login" element={user ? <Navigate to="/" /> : <Login />}/>
                 <Route path="/signup" element={user? <Navigate to="/" /> : <Signup />}/>
                 <Route path="*" element={<Navigate to="/" />} /> 
-                {/* Create page not found */}
 
                 {/* Private Routes*/}
                 <Route path="/" element={
                     <PrivateRoute>
                         <Dashboard />
+                    </PrivateRoute>
+                } />
+                <Route path="/account" element={
+                    <PrivateRoute>
+                        <Account />
+                    </PrivateRoute>
+                } />
+                <Route path="/adminDashboard" element={
+                    <PrivateRoute>
+                        <AdminDashboard />
                     </PrivateRoute>
                 } />
             </Routes>

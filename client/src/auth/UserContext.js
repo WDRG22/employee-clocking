@@ -16,7 +16,7 @@ export const UserProvider = ({ children }) => {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const response = await fetchWithTokenRefresh("/api/account", {
+                const response = await fetchWithTokenRefresh("/api/user", {
                     method: 'GET',
                     credentials: 'include',
                     headers: {

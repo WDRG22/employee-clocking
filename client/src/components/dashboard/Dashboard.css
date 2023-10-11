@@ -91,6 +91,16 @@
     margin: 0.625rem;
 }
 
+.dashboard .taskEntry {
+
+}
+
+.error-message {
+    color: red;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
 @media only screen and (max-width: 600px) {
     .dashboard .dashboardContainer {
         padding: 1.25rem; /* relative to base font size */

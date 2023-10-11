@@ -25,6 +25,8 @@ const useClock = (userId, setIsClockedIn, setErrorMessage) => {
 
     const clock = async (endpoint, userId, currentTime, location, tasks) => {
         const payload = endpoint === '/api/work_entries/clock_in' ? { userId, currentTime, location } : { userId, currentTime, location, tasks };
+        console.log("clock() payload: ", payload)
+
         try {
             const response = await fetchWithTokenRefresh(endpoint, {
                 method: 'POST',
@@ -33,6 +35,7 @@ const useClock = (userId, setIsClockedIn, setErrorMessage) => {
                 body: JSON.stringify(payload)
             });
             const data = await response.json();
+            console.log("clock() data: ", data)
             setClockEntry(data.clockEntry)
             setIsClockedIn(data.isClockedIn)
         } catch (error) {
@@ -84,9 +87,9 @@ const ClockStatus = ({ isClockedIn, handleClockIn, handleClockOut, tasks }) => (
 // Clock Entry component
 const ClockEntry = ({ clockEntry }) => (
     <div className="resultEntry">
-        {clockEntry.clock_in_time && <p className='resultEntryLine'>{`Clocked in at : ${new Date(clockEntry.clock_in_time).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })}`}</p>}
-        {clockEntry.clock_out_time && <p className='resultEntryLine'>{`Clocked out at : ${new Date(clockEntry.clock_out_time).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })}`}</p>}
-        {clockEntry.clock_out_time && <p className='resultEntryLine'>{`Hours Worked : ${clockEntry.hours_worked}`}</p>}
+        {clockEntry.clock_in_time && <p className='resultEntryLine'>{`Clocked in at: ${new Date(clockEntry.clock_in_time).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })}`}</p>}
+        {clockEntry.clock_out_time && <p className='resultEntryLine'>{`Clocked out at: ${new Date(clockEntry.clock_out_time).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })}`}</p>}
+        {clockEntry.clock_out_time && <p className='resultEntryLine'>{`Hours Worked: ${clockEntry.hours_worked}`}</p>}
     </div>
 );
 
@@ -105,14 +108,19 @@ const TaskEntry = ({ tasks, setTasks }) => (
 );
 
 export const Dashboard = () => {
-    const { user, isClockedIn, setIsClockedIn } = useUser();
+    const { user, setIsClockedIn } = useUser();
+
+    // Local state for Dashboard component
     const [date, setDate] = useState(new Date());
     const [tasks, setTasks] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+
+    // Utility functions for clocking in and out
     const { handleClockIn, handleClockOut, clockEntry }  = useClock(user.user_id, setIsClockedIn, setErrorMessage);
 
-
+    // Update time and date each second
     useEffect(() => {
+        console.log("user.isClockedIn: ", user.isClockedIn)
         const timer = setInterval(() => setDate(new Date()), 1000);
         return () => clearInterval(timer);
     }, []);
@@ -123,10 +131,10 @@ export const Dashboard = () => {
             <div className="dashboardContainer">
                 <h1 className='userName'>{user.first_name} {user.last_name}</h1>
                 <TimeDisplay date={date} />
-                <ClockStatus {...{isClockedIn, handleClockIn, handleClockOut, tasks}} />
+                <ClockStatus isClockedIn={user.isClockedIn} handleClockIn={handleClockIn} handleClockOut={handleClockOut} tasks={tasks} />
                 {clockEntry && <ClockEntry clockEntry={clockEntry} />}                
-                {isClockedIn && <TaskEntry tasks={tasks} setTasks={setTasks} />}
-                {errorMessage && <div className="error-message">{errorMessage}</div>}
+                {user.isClockedIn && <TaskEntry tasks={tasks} setTasks={setTasks} />}
+                {errorMessage && <div className="errorMessage">{errorMessage}</div>}
             </div>
         </div>
     );

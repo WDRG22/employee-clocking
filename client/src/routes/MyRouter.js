@@ -7,10 +7,11 @@ import Account from '../components/account/Account';
 import AdminDashboard from '../components/adminDashboard/AdminDashboard';
 import { useUser } from "../auth/UserContext";
 
-const PrivateRoute = ({ children }) => {
+const PrivateRoute = ({ children, requiresAdmin = false }) => {
     const { user } = useUser();
-    if (user) return children;
-    return <Navigate to="/login" replace />;
+    if (!user) return <Navigate to="/login" replace />;
+    if (requiresAdmin && !user.isAdmin) return <Navigate to="/" replace />;
+    return children;
 }
 
 function MyRouter() {
@@ -35,7 +36,7 @@ function MyRouter() {
                     </PrivateRoute>
                 } />
                 <Route path="/adminDashboard" element={
-                    <PrivateRoute>
+                    <PrivateRoute requiresAdmin>
                         <AdminDashboard />
                     </PrivateRoute>
                 } />

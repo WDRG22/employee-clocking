@@ -91,11 +91,7 @@
     margin: 0.625rem;
 }
 
-.dashboard .taskEntry {
-
-}
-
-.error-message {
+.errorMessage {
     color: red;
     font-size: 14px;
     margin-top: 10px;

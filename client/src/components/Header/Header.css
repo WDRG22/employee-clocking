@@ -26,7 +26,7 @@
 .headerLeft,
 .headerRight {
     height: 100%;
-    width: 50%;    
+    width: auto;    
     display: flex;
     align-items: center;
 }
@@ -95,12 +95,12 @@
 }
 
 .mobileDropdown {
-    display: flex;  /* By default, the dropdown should be hidden */
-    position: absolute;  /* The dropdown should be positioned relative to its parent */
-    top: 100%;  /* Start the dropdown right below the header */
-    left: 0;  /* Align to the left of the viewport */
+    display: flex;  
+    position: absolute;
+    top: 100%;  
+    left: 0;  
     background-color: #333;
-    width: 100vw;  /* Ensure it spans the entire viewport width */
+    width: 100vw; 
     z-index: 1000;
     flex-direction: column;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);  

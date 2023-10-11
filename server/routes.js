@@ -16,13 +16,26 @@ const db = pgp(dbConfig);
 const router = express.Router();
 const saltRounds = 10;
 
+// Helper function to determine if user is clocked in
+// Used in /api/users/login and /api/users/user
+const isUserClockedIn = async (userId) => {
+    const lastClockIn = await db.oneOrNone(
+        `SELECT * FROM work_entries WHERE user_id = $1 ORDER BY entry_id DESC LIMIT 1`,
+        [userId]
+    );
+    return lastClockIn && !lastClockIn.clock_out_time;
+}
+
 // Login verification and JWT authentication and authorization
-router.post('/api/login', async (req, res, next) => {
+router.post('/api/users/login', async (req, res, next) => {
     const { email, password } = req.body;
     try {
         const user = await db.oneOrNone('SELECT * FROM users WHERE email = $1', [email]);
         
-        if (user && await bcrypt.compare(password, user.password)) {
+        if (user && await bcrypt.compare(password, user.password)) {        
+
+            // Determine if user currently clocked in
+            const currentlyClockedIn = await isUserClockedIn(user.user_id);
             
             // Generate JWT token from unique user id
             const payload = {
@@ -53,7 +66,8 @@ router.post('/api/login', async (req, res, next) => {
             });
             
             const { password: _, ...userData } = user;  // Exclude password from response
-            res.status(200).json({ message: 'Login successful', user: userData });
+            console.log("/login userData: ", userData);
+            res.status(200).json({ message: 'Login successful', user: userData, isClockedIn: currentlyClockedIn });
         } else {
             res.status(401).json({ message: 'Invalid email or password' });
         }
@@ -63,7 +77,7 @@ router.post('/api/login', async (req, res, next) => {
 });
 
 // New user creation
-router.post('/api/signup', async (req, res, next) => {
+router.post('/api/users/signup', async (req, res, next) => {
     const { firstName, lastName, email, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
@@ -80,7 +94,7 @@ router.post('/api/signup', async (req, res, next) => {
 });
 
 // Logout
-router.post('/api/logout', async (req, res) => {
+router.post('/api/users/logout', async (req, res) => {
     // Clear JWT and refresh token cookies
     res.clearCookie('token');
     res.clearCookie('refreshToken');
@@ -94,7 +108,7 @@ router.post('/api/logout', async (req, res) => {
 });
 
 // Get user user data if logged in
-router.get('/api/user', async (req, res, next) => {
+router.get('/api/users/user', async (req, res, next) => {
     const userId = req.user ? req.user.userId : null;
 
     try {
@@ -114,15 +128,9 @@ router.get('/api/user', async (req, res, next) => {
             return res.status(404).json({ error: 'User not found' });
         };
 
-        // Get last clocked in data
-        const lastClockIn = await db.oneOrNone(
-            `SELECT * FROM work_entries WHERE user_id = $1 ORDER BY entry_id DESC LIMIT 1`,
-            [userId]
-        );
-
         // Determine if user currently clocked in
-        const currentlyClockedIn = lastClockIn && !lastClockIn.clock_out_time;
-
+        const currentlyClockedIn = await isUserClockedIn(userId)
+        console.log("/user user: ", userData);
         res.json({ user: userData, isClockedIn: currentlyClockedIn });
     } catch (error) {
         console.log(error);
@@ -135,7 +143,7 @@ router.get('/api/user', async (req, res, next) => {
 });
 
 // Clock in
-router.post('/api/clock_in', async (req, res, next) => {
+router.post('/api/work_entries/clock_in', async (req, res, next) => {
     const { userId, currentTime, location } = req.body;
     const locationPoint = `(${location.latitude}, ${location.longitude})`;
 
@@ -163,7 +171,7 @@ router.post('/api/clock_in', async (req, res, next) => {
 });
 
 // Clock-out
-router.post('/api/clock_out', async (req, res, next) => {
+router.post('/api/work_entries/clock_out', async (req, res, next) => {
     const { userId, currentTime, location, tasks } = req.body;
     const locationPoint = `(${location.latitude}, ${location.longitude})`;
 
@@ -179,7 +187,6 @@ router.post('/api/clock_out', async (req, res, next) => {
         if (!clockEntry) {
             return res.status(400).json({ message: 'No active session to clock out from.' });
         }
-        console.log(clockEntry)
 
         res.status(200).json({ message: 'Clocked out', clockEntry, isClockedIn: false });
     } catch (error) {
@@ -189,7 +196,7 @@ router.post('/api/clock_out', async (req, res, next) => {
 });
 
 // Refresh token
-router.post('/api/token/refresh', async (req, res, next) => {
+router.post('/api/refresh_tokens/refresh', async (req, res, next) => {
     const { refreshToken } = req.cookies;
     
     const storedToken = await db.oneOrNone('SELECT user_id FROM refresh_tokens WHERE token = $1', [refreshToken]);

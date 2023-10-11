@@ -12,7 +12,7 @@ const Header = () => {
 
     const logout = async () => {
         try {
-            const response = await fetchWithTokenRefresh('/api/logout', {
+            const response = await fetchWithTokenRefresh('/api/users/logout', {
                 method: 'POST',
                 credentials: 'include',
                 headers: {

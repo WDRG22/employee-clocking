@@ -19,8 +19,7 @@ const useClock = (userId, setIsClockedIn, setErrorMessage) => {
     };
 
     const clock = async (endpoint, userId, currentTime, location, tasks) => {
-        const payload = endpoint === '/api/clock_in' ? { userId, currentTime, location } : { userId, currentTime, location, tasks };
-        console.log("payload: ", payload)
+        const payload = endpoint === '/api/work_entries/clock_in' ? { userId, currentTime, location } : { userId, currentTime, location, tasks };
         try {
             const response = await fetchWithTokenRefresh(endpoint, {
                 method: 'POST',
@@ -38,7 +37,7 @@ const useClock = (userId, setIsClockedIn, setErrorMessage) => {
 
     const handleClockIn = async () => {
         const location = await getLocation();
-        clock('/api/clock_in', userId, new Date(), location);
+        clock('/api/work_entries/clock_in', userId, new Date(), location);
     };
 
     const handleClockOut = async (tasks) => {
@@ -48,7 +47,7 @@ const useClock = (userId, setIsClockedIn, setErrorMessage) => {
         }
         setErrorMessage('');  // Clearing error message if the input is valid
         const location = await getLocation();
-        clock('/api/clock_out', userId, new Date(), location, tasks);
+        clock('/api/work_entries/clock_out', userId, new Date(), location, tasks);
     };    
 
     return [handleClockIn, handleClockOut, clockEntry];

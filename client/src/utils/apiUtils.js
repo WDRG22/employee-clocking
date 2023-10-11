@@ -3,7 +3,7 @@ async function fetchWithTokenRefresh(input, init) {
     
     if (response.status === 401) {
         // Attempt to refresh token
-        const refreshResponse = await fetch("/api/token/refresh", {
+        const refreshResponse = await fetch("/api/refresh_tokens/refresh", {
             method: 'POST',
             credentials: 'include', 
         });

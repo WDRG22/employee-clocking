@@ -1,5 +1,7 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { fetchWithTokenRefresh } from '../utils/apiUtils';
+import { TailSpin } from 'react-loading-icons';
+import './LoadingSpinner.css'
 
 const UserContext = createContext();
 
@@ -15,17 +17,20 @@ export const UserProvider = ({ children }) => {
     // Fetch userData when component mounts
     useEffect(() => {
         const fetchUserData = async () => {
+            console.log("UserContext fetchUserData")
             try {
-                const response = await fetchWithTokenRefresh("/api/user", {
+                const response = await fetchWithTokenRefresh("/api/users/user", {
                     method: 'GET',
                     credentials: 'include',
                     headers: {
                         'Content-Type': 'application/json'
                     }
                 });
+                console.log('fetchUserData response: ', response);
                 
                 if (response.ok) {
-                    const data = await response.json();
+                    const data = await response.json();          
+                    console.log("UserContext data", data)      
                     setUser(data.user);
                     setIsClockedIn(data.isClockedIn);
                 } else {
@@ -43,9 +48,7 @@ export const UserProvider = ({ children }) => {
 
     return (
         <UserContext.Provider value={{ user, setUser, isLoading, isClockedIn, setIsClockedIn }}>
-            {children}
+            {isLoading ? <TailSpin className='loadingSpinner'/> : children}
         </UserContext.Provider>
     );
 }
-
-

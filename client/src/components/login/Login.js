@@ -12,8 +12,7 @@ export const Login = () => {
         showPassword: false,
     });
     const [incorrectDetailsError, setIncorrectDetailsError] = useState('')
-
-    const { setUser } = useUser();
+    const { setUser, setIsClockedIn } = useUser();
     const { email, password, showPassword } = data;
     const navigate = useNavigate();
 
@@ -27,22 +26,20 @@ export const Login = () => {
         e.preventDefault();
     
         try {
-            const response = await fetchWithTokenRefresh("/api/login", {
+            const response = await fetchWithTokenRefresh("/api/users/login", {
                 method: 'POST',
-                mode: 'cors',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ email, password }),
             });
-            console.log("Response: ", response)
             
+            const data = await response.json();
             if (response.ok) {
-                const data = await response.json();
                 setUser(data.user);
+                setIsClockedIn(data.isClockedIn)
                 navigate('/');
             } else {
-                const data = await response.json();
                 setIncorrectDetailsError(data.message);
             }
         } catch (err) {

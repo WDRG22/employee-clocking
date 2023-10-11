@@ -3,7 +3,6 @@ const path = require('path');
 const express = require('express');
 const https = require('https');
 const fs = require('fs');
-const { expressjwt } = require('express-jwt');
 const cookieParser = require('cookie-parser');
 const app = express();
 const routes = require('./routes.js');
@@ -20,6 +19,7 @@ app.use((req, res, next) => {
         try {
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
             req.user = decoded;
+            console.log("decoded token req.user: ", req.user)
             next();
         } catch (err) {
             // handle the error (invalid token, etc.)

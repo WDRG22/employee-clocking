@@ -9,7 +9,7 @@ export const Account = () => {
 
     useEffect(() => {
         // For this example, I'm assuming you have an endpoint like /api/work_entries
-        fetch('/api/work_entries')
+        fetch('/api/work_entries/user')
             .then((response) => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');

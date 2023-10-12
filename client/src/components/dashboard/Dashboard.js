@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Header from '../header/Header';
 import { useUser } from "../../auth/UserContext";
 import { fetchWithTokenRefresh } from '../../utils/apiUtils';
@@ -35,11 +35,9 @@ const useClock = (user, setUser, setErrorMessage) => {
                 body: JSON.stringify(payload)
             });
             const data = await response.json();
-            setUser({
-                ...user,
-                isClockedIn: data.isClockedIn
-            });
+            console.log("clock data: ", data)
             setClockEntry(data.clockEntry)
+            setUser(data.user);
         } catch (error) {
             console.log(error)
         }
@@ -117,9 +115,9 @@ export const Dashboard = () => {
             <div className="dashboardContainer">
                 <h1 className='userName'>{user.first_name} {user.last_name}</h1>
                 <DateTime />
-                <ClockStatus isClockedIn={user.isClockedIn} handleClockIn={handleClockIn} handleClockOut={handleClockOut} tasks={tasks} />
+                <ClockStatus isClockedIn={user.is_clocked_in} handleClockIn={handleClockIn} handleClockOut={handleClockOut} tasks={tasks} />
                 {clockEntry && <ClockEntry clockEntry={clockEntry} />}                
-                {user.isClockedIn && <TaskEntry tasks={tasks} setTasks={setTasks} />}
+                {user.is_clocked_in && <TaskEntry tasks={tasks} setTasks={setTasks} />}
                 {errorMessage && <div className="errorMessage">{errorMessage}</div>}
             </div>
         </div>

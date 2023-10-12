@@ -22,8 +22,7 @@ export const Login = () => {
     }
 
     // Submit login info to server
-    const submitHandler = async e => {
-        console.log('calling login submitHandler...')         
+    const submitHandler = async e => {       
         e.preventDefault();
     
         try {
@@ -37,10 +36,7 @@ export const Login = () => {
             
             const data = await response.json();
             if (response.ok) {
-                setUser({
-                    ...data.user,
-                    isClockedIn: data.isClockedIn
-                });
+                setUser(data.user);
                 navigate('/');
             } else {
                 setIncorrectDetailsError(data.message);

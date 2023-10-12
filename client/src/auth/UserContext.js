@@ -27,10 +27,8 @@ export const UserProvider = ({ children }) => {
                 
                 if (response.ok) {
                     const data = await response.json();                     
-                    setUser({
-                        ...data.user,
-                        isClockedIn: data.isClockedIn
-                    });
+                    console.log("UserContext user data:", data)
+                    setUser(data.user);
                 } else {
                     setUser(null);
                 }

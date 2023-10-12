@@ -16,16 +16,6 @@ const db = pgp(dbConfig);
 const router = express.Router();
 const saltRounds = 10;
 
-// Helper function to determine if user is clocked in
-// Used in /api/users/login and /api/users/user
-const isUserClockedIn = async (userId) => {
-    const lastClockIn = await db.oneOrNone(
-        `SELECT * FROM work_entries WHERE user_id = $1 ORDER BY entry_id DESC LIMIT 1`,
-        [userId]
-    );
-    return lastClockIn && !lastClockIn.clock_out_time;
-}
-
 // Login verification and JWT authentication and authorization
 router.post('/api/users/login', async (req, res, next) => {
     const { email, password } = req.body;
@@ -34,9 +24,6 @@ router.post('/api/users/login', async (req, res, next) => {
         
         if (user && await bcrypt.compare(password, user.password)) {        
 
-            // Determine if user currently clocked in
-            const currentlyClockedIn = await isUserClockedIn(user.user_id);
-            
             // Generate JWT token from unique user id
             const payload = {
                 userId: user.user_id // Use 'id' instead of '_id'
@@ -67,7 +54,7 @@ router.post('/api/users/login', async (req, res, next) => {
             
             const { password: _, ...userData } = user;  // Exclude password from response
             console.log("/login userData: ", userData);
-            res.status(200).json({ message: 'Login successful', user: userData, isClockedIn: currentlyClockedIn });
+            res.status(200).json({ message: 'Login successful', user: userData });
         } else {
             res.status(401).json({ message: 'Invalid email or password' });
         }
@@ -119,7 +106,7 @@ router.get('/api/users/user', async (req, res, next) => {
 
         // Get user data
         const userData = await db.oneOrNone(
-            'SELECT user_id, first_name, last_name, email FROM users WHERE user_id = $1',
+            'SELECT * FROM users WHERE user_id = $1',
             [userId]
         );
         
@@ -128,10 +115,10 @@ router.get('/api/users/user', async (req, res, next) => {
             return res.status(404).json({ error: 'User not found' });
         };
 
-        // Determine if user currently clocked in
-        const currentlyClockedIn = await isUserClockedIn(userId)
-        console.log("/user user: ", userData);
-        res.json({ user: userData, isClockedIn: currentlyClockedIn });
+        console.log("/users/user userData: ", userData);
+
+        const {password, ...userWithoutPassword } = userData;
+        res.json({ user: userWithoutPassword });
     } catch (error) {
         console.log(error);
         if (error.message.includes('Not authenticated') || error.message.includes('User not found')) {
@@ -163,7 +150,14 @@ router.post('/api/work_entries/clock_in', async (req, res, next) => {
             'INSERT INTO work_entries(user_id, clock_in_time, clock_in_location) VALUES($1, $2, $3) RETURNING *',
             [userId, currentTime, locationPoint]
         );
-        res.status(200).json({ message: 'Clocked in', clockEntry, isClockedIn: true });
+
+        const userData = await db.oneOrNone(
+            `SELECT * FROM users WHERE user_id = $1`
+        , [userId]);
+
+        const {password, ...user} = userData
+
+        res.status(200).json({ message: 'Clocked in', clockEntry, user });
     } catch (error) {
         console.error(error);
         next(error);
@@ -184,11 +178,19 @@ router.post('/api/work_entries/clock_out', async (req, res, next) => {
             [userId, currentTime, locationPoint, tasks]
         );
 
+        const userData = await db.oneOrNone(
+            `SELECT * FROM users WHERE user_id = $1`, 
+            [userId]
+        );
+
         if (!clockEntry) {
             return res.status(400).json({ message: 'No active session to clock out from.' });
         }
 
-        res.status(200).json({ message: 'Clocked out', clockEntry, isClockedIn: false });
+        // Remove password
+        const { password, ...user } = userData;
+
+        res.status(200).json({ message: 'Clocked out', clockEntry, user });
     } catch (error) {
         console.error(error);
         next(error);
@@ -200,8 +202,7 @@ router.get('/api/work_entries/user', async (req, res, next) => {
     const userId = req.user.user_id;
 
     try {
-        const query = 'SELECT * FROM work_entries WHERE user_id = $1';
-        const result = await pool.query(query, [userId]);
+        const query = await ('SELECT * FROM work_entries WHERE user_id = $1', [userId]);
 
         res.json(result.rows);
     } catch (error) {

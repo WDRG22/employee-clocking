@@ -27,6 +27,10 @@
     font-weight: bold;
 }
 
+.info-message{
+    color: var(--color-white);
+}
+
 .entries-list {
     list-style: none;
     padding-left: 0;

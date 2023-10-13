@@ -54,7 +54,7 @@
 }
 
 .signup .input::placeholder {
-    color: var(--color-light-blue);
+    color: var(--color-white);
 }
 
 .signup .input.error {

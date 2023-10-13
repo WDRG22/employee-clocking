@@ -56,11 +56,15 @@ function Account() {
             <div className='account'>
                 <div className='account-container'>
                     <h2 className="account-title">Your Work Entries</h2>
+                    
                     {isLoading && <TailSpin />}
                     {error && <p className="error-message">Error fetching work entries. Please try again later.</p>}
-                    {!isLoading && !error && (                        
+                    {!isLoading && !error && workEntries.length === 0 && (
+                        <p className="info-message">You have no work entries.</p>
+                    )}
+                    {!isLoading && !error && workEntries.length > 0 && (
                         <div className="entries-list-wrapper">
-                                                        <div className="pagination-controls">
+                            <div className="pagination-controls">
                                 <button className="previous-button"
                                     onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} 
                                     disabled={currentPage === 1}

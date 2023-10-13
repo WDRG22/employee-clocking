@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { fetchWithTokenRefresh } from '../../utils/apiUtils';
 import Header from "../header/Header";
 import WorkEntry from '../workEntry/WorkEntry';
+import { TailSpin } from 'react-loading-icons';
 
 export const AdminDashboard = () => {
     const [workEntries, setWorkEntries] = useState([]);
@@ -52,7 +53,7 @@ export const AdminDashboard = () => {
         <div className="adminDashboard">
             <Header />
             <h1>Admin Dashboard</h1>
-            {isLoading && <p>Loading...</p>}
+            {isLoading && <TailSpin />}
             {error && <p className="error-message">{error}</p>}
             {!isLoading && !error && (
     <div className="entries-list-wrapper">

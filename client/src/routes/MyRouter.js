@@ -20,29 +20,21 @@ function MyRouter() {
     return (
         <BrowserRouter>
             <Routes>
-                <Route path="/login" element={user ? <Navigate to="/" /> : <Login />}/>
-                <Route path="/signup" element={user? <Navigate to="/" /> : <Signup />}/>
-                <Route path="*" element={<Navigate to="/" />} /> 
+                <Route path="/login" element={user ? <Navigate to="/" replace /> : <Login />} />
+                <Route path="/signup" element={user ? <Navigate to="/" replace /> : <Signup />} />
 
-                {/* Private Routes*/}
+                {/* This is where we manage which dashboard to display */}
                 <Route path="/" element={
                     <PrivateRoute>
-                        <Dashboard />
+                        {user?.is_admin ? <AdminDashboard /> : <Dashboard />}
                     </PrivateRoute>
-                } />
-                <Route path="/account" element={
-                    <PrivateRoute>
-                        <Account />
-                    </PrivateRoute>
-                } />
-                <Route path="/adminDashboard" element={
-                    <PrivateRoute requiresAdmin>
-                        <AdminDashboard />
-                    </PrivateRoute>
-                } />
+                }/>
+                <Route path="/account" element={<PrivateRoute><Account /></PrivateRoute>} />            
+                <Route path="*" element={<Navigate to="/" />} /> 
             </Routes>
         </BrowserRouter>
     )
 }
+
 
 export default MyRouter;

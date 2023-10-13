@@ -16,6 +16,7 @@ export const UserProvider = ({ children }) => {
     // Fetch userData when component mounts
     useEffect(() => {
         const fetchUserData = async () => {
+            setIsLoading(true);
             try {
                 const response = await fetchWithTokenRefresh("/api/users/user", {
                     method: 'GET',
@@ -36,7 +37,7 @@ export const UserProvider = ({ children }) => {
             } catch (error) {
                 console.log("Error fetching user data: ", error);
             } finally {
-                setIsLoading(false)
+                setIsLoading(false);
             }
         };
         fetchUserData();

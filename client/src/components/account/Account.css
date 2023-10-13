@@ -1,0 +1,100 @@
+.account {
+    height: 92vh;
+}
+
+.account-container {
+    padding: 2em;
+    max-width: 900px; /* Increased a bit for better spacing on larger screens */
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.account-title {
+    border-bottom: 2px solid #555;
+    padding-bottom: 10px;
+    margin-bottom: 24px; /* Consistent spacing */
+    color: #333;
+    font-weight: bold; /* Make the title pop a bit more */
+}
+
+.entries-list {
+    list-style: none;
+    padding-left: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 24px; /* Increased the gap for better spacing */
+}
+
+.entry-item {
+    background-color: #444;
+    color: #f0f0f0;
+    padding: 20px; /* Increased padding for a more roomy feel */
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Increased shadow for a slightly elevated look */
+}
+
+.entry-item div {
+    margin-bottom: 12px; /* Slight increase in spacing */
+    font-size: 0.9rem;
+}
+
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Distribute the items evenly */
+    margin-top: 24px; /* Consistent spacing */
+}
+
+.previous-button, .next-button {
+    background-color: #555;
+    color: #e0e0e0;
+    padding: 12px 24px; /* Increased padding for a better click area */
+    border: none;
+    border-radius: 4px;
+    margin: 0 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-weight: bold; /* Bold fonts for buttons to make them stand out */
+}
+
+.previous-button:hover, .next-button:hover {
+    background-color: #777;
+}
+
+.previous-button:disabled, .next-button:disabled {
+    background-color: #444;
+    cursor: not-allowed;
+}
+
+.page-info {
+    color: #999; /* Slightly muted for a more subtle appearance */
+    font-weight: bold;
+}
+
+.loading-message, .error-message {
+    margin-bottom: 24px; /* Consistent spacing */
+}
+
+/* Responsive styles */
+@media screen and (max-width: 768px) { /* medium screens */
+    .entries-list {
+        grid-template-columns: 1fr; /* one column for medium screens */
+    }
+}
+
+@media screen and (max-width: 480px) { /* small screens */
+    .account-container {
+        padding: 1em;
+    }
+
+    .entry-item div {
+        font-size: 0.85rem;
+    }
+
+    /* Adjust button sizes for smaller screens */
+    .previous-button, .next-button {
+        padding: 10px 16px;
+    }
+}

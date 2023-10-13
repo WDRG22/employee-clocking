@@ -53,7 +53,6 @@ router.post('/api/users/login', async (req, res, next) => {
             });
             
             const { password: _, ...userData } = user;  // Exclude password from response
-            console.log("/login userData: ", userData);
             res.status(200).json({ message: 'Login successful', user: userData });
         } else {
             res.status(401).json({ message: 'Invalid email or password' });
@@ -99,10 +98,6 @@ router.get('/api/users/user', async (req, res, next) => {
     const userId = req.user ? req.user.userId : null;
 
     try {
-        // Check if user is authenticated
-        if (!userId) {
-            return res.status(401).json({ error: 'Not authenticated' });
-        }
 
         // Get user data
         const userData = await db.oneOrNone(
@@ -114,8 +109,6 @@ router.get('/api/users/user', async (req, res, next) => {
         if (!userData) {
             return res.status(404).json({ error: 'User not found' });
         };
-
-        console.log("/users/user userData: ", userData);
 
         const {password, ...userWithoutPassword } = userData;
         res.json({ user: userWithoutPassword });
@@ -131,8 +124,8 @@ router.get('/api/users/user', async (req, res, next) => {
 
 // Clock in
 router.post('/api/work_entries/clock_in', async (req, res, next) => {
-    const { userId, currentTime, location } = req.body;
-    const locationPoint = `(${location.latitude}, ${location.longitude})`;
+    const { userId, currentTime, location, coordinates } = req.body;
+    const coordinatesPoint = `(${coordinates.latitude}, ${coordinates.longitude})`;
 
     try {
         // Check for an incomplete entry for the user
@@ -147,8 +140,8 @@ router.post('/api/work_entries/clock_in', async (req, res, next) => {
         }
 
         const clockEntry = await db.one(
-            'INSERT INTO work_entries(user_id, clock_in_time, clock_in_location) VALUES($1, $2, $3) RETURNING *',
-            [userId, currentTime, locationPoint]
+            'INSERT INTO work_entries(user_id, clock_in_time, clock_in_location, clock_in_coordinates) VALUES($1, $2, $3, $4) RETURNING *',
+            [userId, currentTime, location, coordinatesPoint]
         );
 
         const userData = await db.oneOrNone(
@@ -166,16 +159,16 @@ router.post('/api/work_entries/clock_in', async (req, res, next) => {
 
 // Clock-out
 router.post('/api/work_entries/clock_out', async (req, res, next) => {
-    const { userId, currentTime, location, tasks } = req.body;
-    const locationPoint = `(${location.latitude}, ${location.longitude})`;
+    const { userId, currentTime, location, coordinates, tasks } = req.body;
+    const coordinatesPoint = `(${coordinates.latitude}, ${coordinates.longitude})`;
 
     try {
         const clockEntry = await db.oneOrNone(
             `UPDATE work_entries 
-             SET clock_out_time = $2, clock_out_location = $3, tasks = $4
+             SET clock_out_time = $2, clock_out_location = $3, clock_out_coordinates = $4, tasks = $5
              WHERE user_id = $1 AND clock_out_time IS NULL
              RETURNING *`,
-            [userId, currentTime, locationPoint, tasks]
+            [userId, currentTime, location, coordinatesPoint, tasks]
         );
 
         const userData = await db.oneOrNone(
@@ -199,16 +192,19 @@ router.post('/api/work_entries/clock_out', async (req, res, next) => {
 
 // Get user's work entries
 router.get('/api/work_entries/user', async (req, res, next) => {
-    const userId = req.user.user_id;
+    const userId = req.user.userId;
 
     try {
-        const query = await ('SELECT * FROM work_entries WHERE user_id = $1', [userId]);
+        const entries = await db.any(
+            'SELECT * FROM work_entries WHERE user_id = $1 ORDER BY entry_id DESC', 
+            [userId]
+        );
 
-        res.json(result.rows);
+        res.json(entries);
     } catch (error) {
         console.error('Error fetching work entries:', error);
         res.status(500).json({ error: 'Failed to fetch work entries' });
-    };
+    }
 });
 
 // Refresh token

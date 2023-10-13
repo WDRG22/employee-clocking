@@ -20,12 +20,38 @@ const useLocation = () => {
     return getLocation;
 };
 
+// Api to geocode coordinates to address
+async function encodeLocation(coord) {
+    const lat = coord.latitude;
+    const lng = coord.longitude;
+    const baseUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`;
+
+    try {
+        const response = await fetch(baseUrl);
+        if (!response.ok) {
+            throw new Error("Error geocoding location with Nominatim.");
+        }
+
+        const data = await response.json();
+        if (data.display_name) {
+            return data.display_name;
+        } else {
+            console.warn("No address found for provided coordinates.");
+            return null; // default to null if no address is found
+        }
+    } catch (error) {
+        console.error("Error geocoding location with Nominatim:", error);
+        return null; // returning null if there's an error
+    }
+}
+
+
 const useClock = (user, setUser, setErrorMessage) => {
     const [clockEntry, setClockEntry] = useState(null);  
     const getLocation = useLocation();
 
-    const clock = async (endpoint, userId, currentTime, location, tasks) => {
-    const payload = endpoint === '/api/work_entries/clock_in' ? { userId, currentTime, location } : { userId, currentTime, location, tasks };
+    const clock = async (endpoint, userId, currentTime, location, coordinates, tasks) => {
+    const payload = endpoint === '/api/work_entries/clock_in' ? { userId, currentTime, location, coordinates } : { userId, currentTime, location, coordinates, tasks };
 
         try {
             const response = await fetchWithTokenRefresh(endpoint, {
@@ -35,7 +61,6 @@ const useClock = (user, setUser, setErrorMessage) => {
                 body: JSON.stringify(payload)
             });
             const data = await response.json();
-            console.log("clock data: ", data)
             setClockEntry(data.clockEntry)
             setUser(data.user);
         } catch (error) {
@@ -44,8 +69,9 @@ const useClock = (user, setUser, setErrorMessage) => {
     };
 
     const handleClockIn = async () => {
-        const location = await getLocation();
-        clock('/api/work_entries/clock_in', user.user_id, new Date(), location);
+        const coordinates = await getLocation();
+        const location = await encodeLocation(coordinates);
+        clock('/api/work_entries/clock_in', user.user_id, new Date(), location, coordinates);
     };
 
     const handleClockOut = async (tasks) => {
@@ -54,8 +80,9 @@ const useClock = (user, setUser, setErrorMessage) => {
             return;
         }
         setErrorMessage('');  // Clearing error message if the input is valid
-        const location = await getLocation();
-        clock('/api/work_entries/clock_out', user.user_id, new Date(), location, tasks);
+        const coordinates = await getLocation();
+        const location = await encodeLocation(coordinates);
+        clock('/api/work_entries/clock_out', user.user_id, new Date(), location, coordinates, tasks);
     };    
 
     return {

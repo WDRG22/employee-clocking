@@ -1,7 +1,12 @@
+import Header from "../header/Header";
+
 
 export const AdminDashboard = () => {
     return (
-        <h1>Admin Dashboard</h1>
+        <div className="adminDashboard">
+            <Header />
+            <h1>Admin Dashboard</h1>
+        </div>
     );
 };
 

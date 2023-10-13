@@ -207,6 +207,69 @@ router.get('/api/work_entries/user', async (req, res, next) => {
     }
 });
 
+// ADMIN ROUTES
+
+// Get all work_entries
+router.get('/api/admin/work_entries', async (req, res, next) => {
+    try {
+        const entries = await db.any('SELECT * FROM work_entries ORDER BY entry_id DESC');
+        res.json(entries);
+    } catch (error) {
+        console.error('Error fetching all work entries:', error);
+        res.status(500).json({ error: 'Failed to fetch work entries' });
+    }
+});
+
+// Create new work entry
+router.post('/api/admin/work_entries', async (req, res, next) => {
+    const { user_id, clock_in_time, clock_out_time, tasks, clock_in_coordinates, clock_out_coordinates, hours_worked } = req.body;
+
+    try {
+        await db.none(
+            'INSERT INTO work_entries (user_id, clock_in_time, clock_out_time, tasks, clock_in_coordinates, clock_out_coordinates, hours_worked) VALUES ($1, $2, $3, $4, $5, $6, $7)', 
+            [user_id, clock_in_time, clock_out_time, tasks, clock_in_coordinates, clock_out_coordinates, hours_worked]
+        );
+
+        res.json({ message: 'Work entry created successfully.' });
+    } catch (error) {
+        console.error('Error inserting work entry:', error);
+        res.status(500).json({ error: 'Failed to create work entry' });
+    }
+});
+
+// Update work entry
+router.put('/api/work_entries/:entry_id', async (req, res, next) => {
+    const entryId = req.params.entry_id;
+    const { user_id, clock_in_time, clock_out_time, tasks, clock_in_coordinates, clock_out_coordinates, hours_worked } = req.body;
+
+    try {
+        await db.none(
+            'UPDATE work_entries SET user_id=$1, clock_in_time=$2, clock_out_time=$3, tasks=$4, clock_in_coordinates=$5, clock_out_coordinates=$6, hours_worked=$7 WHERE entry_id=$8',
+            [user_id, clock_in_time, clock_out_time, tasks, clock_in_coordinates, clock_out_coordinates, hours_worked, entryId]
+        );
+
+        res.json({ message: 'Work entry updated successfully.' });
+    } catch (error) {
+        console.error('Error updating work entry:', error);
+        res.status(500).json({ error: 'Failed to update work entry' });
+    }
+});
+
+
+// Delete a work entry
+router.delete('/api/admin/work_entries/:entry_id', async (req, res, next) => {
+    const entryId = req.params.entry_id;
+
+    try {
+        await db.none('DELETE FROM work_entries WHERE entry_id=$1', [entryId]);
+        res.json({ message: 'Work entry deleted successfully.' });
+    } catch (error) {
+        console.error('Error deleting work entry:', error);
+        res.status(500).json({ error: 'Failed to delete work entry' });
+    }
+});
+
+
 // Refresh token
 router.post('/api/refresh_tokens/refresh', async (req, res, next) => {
     const { refreshToken } = req.cookies;

@@ -1,0 +1,61 @@
+html {
+    font-size: 100%; 
+    box-sizing: border-box;
+}
+
+*, *::before, *::after { 
+    box-sizing: inherit;
+}
+
+body, #root {
+    min-height: 100%; 
+    margin: 0;
+    padding: 0;
+    background-color: var(--color-dark-gray);
+}
+
+:root {
+    --color-white: rgb(255, 255, 255);
+    --color-light-blue: rgb(196, 227, 255);
+    --color-link-blue: rgb(138, 180, 248);
+    --color-primary-blue: rgb(63, 154, 243);
+    --color-dark-blue: rgb(45, 115, 220);
+    --color-lighter-gray: rgb(169, 169, 169);
+    --color-light-gray: rgb(77, 81, 85);
+    --color-medium-gray: rgb(55, 59, 63);
+    --color-dark-gray: rgb(33, 37, 41);
+    --color-red: rgb(220, 80, 70); 
+    --color-dark-red: rgb(175, 50, 40);
+    --color-green: rgb(76, 175, 80);
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: var(--color-dark-gray);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--color-dark-gray);
+}
+
+a {
+    color: var(--color-primary-blue);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+button {
+    background-color: var(--color-primary-blue);
+    color: var(--color-white);
+    border: none;
+    padding: 0.625rem 0.9375rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: var(--color-dark-blue);
+}

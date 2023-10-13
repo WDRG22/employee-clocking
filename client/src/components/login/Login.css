@@ -6,7 +6,7 @@
     text-align: center;
     padding-top: 10vh;
     height: 100vh; 
-    background-color: #333;
+    background-color: var(--color-dark-gray);
     gap: 2rem;
 }
 
@@ -15,21 +15,25 @@
     margin: 0 auto;
     max-width: 100%;
     height: auto;
-    width: 18.75rem; /* 300px */
+    width: 18.75rem; 
 }
 
 .login .loginForm {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     text-align: left;
-    background: #444;
-    padding: 1.25rem; /* 20px */
+    background: var(--color-medium-gray);
+    padding: 1.25rem; 
     border-radius: 0.3125rem;
     box-shadow: 0 0.125rem 0.3125rem rgba(0,0,0,0.5);
-    width: 18.75rem;
+    width: 22rem;
 }
 
 .login .header {
-    color: white;
-    background-color: #444;
+    color: var(--color-white);
+    background-color: var(--color-medium-gray);
     box-shadow: none;
     text-align: center;
     margin-bottom: 0;
@@ -37,31 +41,23 @@
 
 .login .input {
     width: 95%;
-    padding: 0.625rem; /* 10px */
+    padding: 0.625rem; 
     margin: 0.625rem 0;
-    border: 1px solid #555;
+    border: 1px solid var(--color-light-gray);
     border-radius: 0.3125rem;
-    background-color: #555;
-    color: white;
+    background-color: var(--color-light-gray);
+    color: var(--color-white);
 }
 
 .login .input::placeholder {
-    color: #aaa;
+    color: var(--color-light-blue);
 }
 
 .login .button {
     width: 100%;
-    padding: 0.625rem;
-    background-color: #007BFF;
-    border: none;
     border-radius: 0.3125rem;
-    color: white;
     font-weight: bold;
     cursor: pointer;
-}
-
-.login .button:hover {
-    background-color: #0056b3;
 }
 
 .login .createAccountLink {
@@ -69,7 +65,7 @@
     margin-top: 0.625rem;
     text-align: center;
     text-decoration: none;
-    color: #007BFF;
+    color: var(--color-link-blue);
 }
 
 .login .createAccountLink:hover {
@@ -77,9 +73,8 @@
 }
 
 .login .checkboxContainer {
-    display: flex;
-    align-items: center;
-    color: white;
+    align-self: start;
+    color: var(--color-white);
     margin: 0.625rem 0;
 }
 

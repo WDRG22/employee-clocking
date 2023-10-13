@@ -37,12 +37,12 @@ const Header = () => {
         <div className='header'>
             <div className="headerContainer">
                 <div className='headerLeft'>
-                    <img className='logoImage' src={logo} alt="Cyntra"/>
                     <div className="navigationButtons">
                         <button className="navButton" onClick={() => navigate('/')}>Dashboard</button>
                         <button className="navButton" onClick={() => navigate('/account')}>Account</button>
                     </div>
                 </div>    
+                    <img className='logoImage' src={logo} alt="Cyntra"/>
                 <div className='headerRight'>
                     <div className='navigationButtons'>
                         <button className="logoutButton" onClick={logout}>Logout</button>

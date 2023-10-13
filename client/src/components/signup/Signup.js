@@ -75,19 +75,21 @@ export const Signup = () => {
             <img className="logo" src={logo} alt="Cyntra Logo" />
             <form className="signupForm" onSubmit={submitHandler}>
                 <h2 className="header">Sign Up</h2>
-                <input className="input" type="text" name="firstName" value={firstName} onChange={changeHandler} placeholder="First Name" />
-                <input className="input" type="text" name="lastName" value={lastName} onChange={changeHandler} placeholder="Last Name" />
-                <input 
-                    className={`input ${errorMessage ? 'error' : ''}`} 
-                    type="email" 
-                    name="email" 
-                    value={email} 
-                    onChange={changeHandler} 
-                    placeholder="Email"
-                />
-                <input className="input" type="password" name="password" value={password} onChange={changeHandler} placeholder="Password" />
-                <input className="input" type="password" name="passwordVerify" value={passwordVerify} onChange={changeHandler} placeholder="Verify Password" />
-                {errorMessage && <p style={{ color: 'red', fontWeight: 'bold' }}>{errorMessage}</p>}
+                <div className='inputFields'>
+                    <input className="input" type="text" name="firstName" value={firstName} onChange={changeHandler} placeholder="First Name" />
+                    <input className="input" type="text" name="lastName" value={lastName} onChange={changeHandler} placeholder="Last Name" />
+                    <input 
+                        className={`input ${errorMessage ? 'error' : ''}`} 
+                        type="email" 
+                        name="email" 
+                        value={email} 
+                        onChange={changeHandler} 
+                        placeholder="Email"
+                    />
+                    <input className="input" type="password" name="password" value={password} onChange={changeHandler} placeholder="Password" />
+                    <input className="input" type="password" name="passwordVerify" value={passwordVerify} onChange={changeHandler} placeholder="Verify Password" />
+                    {errorMessage && <p className="errorMessage">{errorMessage}</p>}
+                </div>
                 <button className="button" type="submit">Signup</button>
                 <Link className="signInLink" to="/login">Already have an account? Sign In</Link>
             </form>

@@ -1,6 +1,6 @@
 import { UserProvider } from "./auth/UserContext";
 import MyRouter from "./routes/MyRouter";
-import './App.css';
+import './globalStyles.css';
 
 function App() {
     return (

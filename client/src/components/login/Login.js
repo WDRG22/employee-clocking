@@ -7,8 +7,8 @@ import './Login.css';
 
 export const Login = () => {
     const [data, setData] = useState({
-        email: "test@test.com",
-        password: "test123",
+        email: "admin@admin.com",
+        password: "admin123",
         showPassword: false,
     });
     const [incorrectDetailsError, setIncorrectDetailsError] = useState('')
@@ -52,8 +52,10 @@ export const Login = () => {
             <img className="logo" src={logo} alt="Cyntra Logo" />
             <form className="loginForm" onSubmit={submitHandler}>
                 <h2 className="header">Sign In</h2>
-                <input className="input" type="email" name="email" value={email} onChange={changeHandler} placeholder="Email" />
-                <input className="input" type={showPassword ? "text" : "password"} name="password" value={password} onChange={changeHandler} placeholder="Password" />
+                <div className='inputFields'>
+                    <input className="input" type="email" name="email" value={email} onChange={changeHandler} placeholder="Email" />
+                    <input className="input" type={showPassword ? "text" : "password"} name="password" value={password} onChange={changeHandler} placeholder="Password" />
+                </div>
                 <div className="checkboxContainer">
                     <label>
                         <input type="checkbox" name="showPassword" checked={showPassword} onChange={changeHandler} />

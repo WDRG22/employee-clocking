@@ -5,9 +5,9 @@ import './globalStyles.css';
 function App() {
     return (
         <>
-        <UserProvider>
-            <MyRouter/>            
-        </UserProvider>
+            <UserProvider>
+                <MyRouter/>            
+            </UserProvider>
         </>      
     );
   }

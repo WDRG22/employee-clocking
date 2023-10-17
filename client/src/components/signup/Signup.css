@@ -31,7 +31,7 @@
     width: 22rem;
 }
 
-.signup .header {
+.signup h2 {
     box-shadow: none;
     background-color: var(--color-medium-gray);
     color: var(--color-white);

@@ -51,7 +51,7 @@ export const Login = () => {
         <div className='login'>
             <img className="logo" src={logo} alt="Cyntra Logo" />
             <form className="loginForm" onSubmit={submitHandler}>
-                <h2 className="header">Sign In</h2>
+                <h2>Sign In</h2>
                 <div className='inputFields'>
                     <input className="input" type="email" name="email" value={email} onChange={changeHandler} placeholder="Email" />
                     <input className="input" type={showPassword ? "text" : "password"} name="password" value={password} onChange={changeHandler} placeholder="Password" />

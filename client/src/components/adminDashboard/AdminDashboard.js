@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { fetchWithTokenRefresh } from '../../utils/apiUtils';
-import Header from "../header/Header";
-import WorkEntry from '../workEntry/WorkEntry';
 import { TailSpin } from 'react-loading-icons';
 
 export const AdminDashboard = () => {
@@ -51,19 +49,18 @@ export const AdminDashboard = () => {
 
     return (
         <div className="adminDashboard">
-            <Header />
             <h1>Admin Dashboard</h1>
             {isLoading && <TailSpin />}
             {error && <p className="error-message">{error}</p>}
-            {!isLoading && !error && (
-    <div className="entries-list-wrapper">
-        <ul className="entries-list">
-            {workEntries.map(entry => (
-                <WorkEntry key={entry.entry_id} entry={entry} onDelete={() => deleteWorkEntry(entry.entry_id)} />
-            ))}
-        </ul>
-    </div>
-)}
+            {/* {!isLoading && !error && (
+                <div className="entries-list-wrapper">
+                    <ul className="entries-list">
+                        {workEntries.map(entry => (
+                            <WorkEntry key={entry.entry_id} entry={entry} onDelete={() => deleteWorkEntry(entry.entry_id)} />
+                        ))}
+                    </ul>
+                </div>
+            )} */}
         </div>
     );
 };

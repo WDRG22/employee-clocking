@@ -3,11 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../auth/UserContext';
 import { fetchWithTokenRefresh } from '../../utils/apiUtils';
 import logo from '../../assets/cyntra_logo_white.png'
-import './Header.css';
+import './Navbar.css';
 
-const Header = () => {
+const Navbar = () => {
     const navigate = useNavigate();
-    const { setUser } = useUser();
+    const { user, setUser } = useUser();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
     const logout = async () => {
@@ -31,31 +31,30 @@ const Header = () => {
             console.error('An error occurred during logout:', error);
         }
     }
-    
 
     return (
-        <div className='header'>
-            <div className="headerContainer">
-                <div className='headerLeft'>
+        <div className='navbar'>
+            <div className="navbarContainer">
+                <div className='navbarLeft'>
                     <div className="navigationButtons">
                         <button className="navButton" onClick={() => navigate('/')}>Dashboard</button>
-                        <button className="navButton" onClick={() => navigate('/account')}>Account</button>
+                        <button className="navButton" onClick={() => navigate('/attendance')}>Account</button>
                     </div>
                 </div>    
                     <img className='logoImage' src={logo} alt="Cyntra"/>
-                <div className='headerRight'>
+                <div className='navbarRight'>
                     <div className='navigationButtons'>
                         <button className="logoutButton" onClick={logout}>Logout</button>
                     </div>
                 </div>
             </div>
-            <div className='mobileHeaderContainer'>
+            <div className='mobileNavbarContainer'>
                 <img className='logoImage' src={logo} alt="Cyntra"/>
                 <button onClick={() => setIsDropdownOpen(!isDropdownOpen)} className="menuToggle">☰</button>
                 {isDropdownOpen && 
                 <div className="mobileDropdown">
                     <button className="mobileNavButton" onClick={() => navigate('/')}>Dashboard</button>
-                    <button className="mobileNavButton" onClick={() => navigate('/account')}>Account</button>
+                    <button className="mobileNavButton" onClick={() => navigate('/attendance')}>Account</button>
                     <button className="mobileLogoutButton" onClick={logout}>Logout</button>
                 </div>}
             </div>
@@ -63,4 +62,4 @@ const Header = () => {
     );
 }
 
-export default Header;
+export default Navbar;

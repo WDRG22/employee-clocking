@@ -74,7 +74,7 @@ export const Signup = () => {
         <div className='signup'>
             <img className="logo" src={logo} alt="Cyntra Logo" />
             <form className="signupForm" onSubmit={submitHandler}>
-                <h2 className="header">Sign Up</h2>
+                <h2>Sign Up</h2>
                 <div className='inputFields'>
                     <input className="input" type="text" name="firstName" value={firstName} onChange={changeHandler} placeholder="First Name" />
                     <input className="input" type="text" name="lastName" value={lastName} onChange={changeHandler} placeholder="Last Name" />

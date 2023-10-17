@@ -28,7 +28,7 @@ export const UserProvider = ({ children }) => {
                 
                 if (response.ok) {
                     const data = await response.json();                     
-                    console.log("UserContext user data:", data)
+                    console.log("UserContext user data:", data.user)
                     setUser(data.user);
                 } else {
                     setUser(null);

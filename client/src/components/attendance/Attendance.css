@@ -1,0 +1,106 @@
+.attendanceContainer {
+    margin-top: 10vh;
+    margin-left: 5rem;
+    margin-right: 5rem;
+}
+
+.attendanceContainer .tableControls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.attendanceContainer .tableControls button {
+    border-radius: .5rem;
+    background-color: var(--color-primary-blue);
+    color: var(--color-white);
+    padding: 6px 12px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.attendanceContainer .tableControls button:disabled {
+    background-color: var(--color-lighter-gray);
+    cursor: not-allowed;
+}
+
+.attendanceContainer .tableControls button:hover:not(:disabled) {
+    background-color: var(--color-dark-blue);
+}
+
+.attendanceContainer .dateRange {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 0 1 auto;
+    color: var(--color-light-blue);
+}
+
+.attendanceContainer .pagination {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    align-items: center;
+}
+
+.attendanceContainer .pagination span {
+    color: white;
+    font-size: 20px;
+}
+
+.attendanceContainer .pagination button {
+    border-radius: .5rem;
+    background-color: var(--color-primary-blue);
+    color: var(--color-white);
+    padding: 6px 12px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.attendanceContainer .pagination button.active {
+    background-color: var(--color-dark-blue);
+}
+
+.attendanceContainer .pagination button:hover {
+    background-color: var(--color-dark-blue);
+}
+
+.attendanceContainer h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: var(--color-white);
+}
+
+.attendanceContainer table {
+    width: 100%;
+    border-collapse: collapse;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.attendanceContainer table, th, td {
+    border: 1px solid var(--color-dark-gray);
+}
+
+.attendanceContainer th, td {
+    padding: 12px 15px;
+    text-align: left;    
+}
+
+.attendanceContainer thead {
+    background-color: var(--color-medium-gray);
+    color: var(--color-light-blue);
+}
+
+.attendanceContainer tbody {
+    background-color: var(--color-light-gray);
+    color: var(--color-white);
+}
+
+.attendanceContainer tbody tr:hover {
+    background-color: var(--color-dark-blue);
+}

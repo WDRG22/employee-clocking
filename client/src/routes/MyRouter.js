@@ -1,11 +1,12 @@
 import React from "react";
 import {BrowserRouter, Routes, Route, Navigate} from "react-router-dom";
+import { useUser } from "../auth/UserContext";
 import Dashboard from '../components/dashboard/Dashboard';
 import Signup from '../components/signup/Signup';
 import Login from '../components/login/Login';
-import Account from '../components/account/Account';
+import Attendance from "../components/attendance/Attendance";
 import AdminDashboard from '../components/adminDashboard/AdminDashboard';
-import { useUser } from "../auth/UserContext";
+import Layout from "../components/layout/Layout";
 
 const PrivateRoute = ({ children, requiresAdmin = false }) => {
     const { user } = useUser();
@@ -21,19 +22,26 @@ function MyRouter() {
         <BrowserRouter>
             <Routes>
                 <Route path="/login" element={user ? <Navigate to="/" replace /> : <Login />} />
-                <Route path="/signup" element={user ? <Navigate to="/" replace /> : <Signup />} />
-
-                {/* This is where we manage which dashboard to display */}
+                <Route path="/signup" element={user ? <Navigate to="/" replace /> : <Signup />}/>
+                
                 <Route path="/" element={
-                    <PrivateRoute>
-                        {user?.is_admin ? <AdminDashboard /> : <Dashboard />}
-                    </PrivateRoute>
+                    <Layout>
+                        <PrivateRoute>
+                            {user?.is_admin ? <AdminDashboard /> : <Dashboard />}
+                        </PrivateRoute>
+                    </Layout>
                 }/>
-                <Route path="/account" element={<PrivateRoute><Account /></PrivateRoute>} />            
-                <Route path="*" element={<Navigate to="/" />} /> 
+                
+                <Route path="/attendance" element={
+                    <Layout>
+                        <PrivateRoute><Attendance /></PrivateRoute>
+                    </Layout>
+                }/>
+                
+                <Route path="*" element={<Layout><Navigate to="/" /></Layout>} /> 
             </Routes>
         </BrowserRouter>
-    )
+    );
 }
 
 

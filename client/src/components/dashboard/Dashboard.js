@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Header from '../header/Header';
 import { useUser } from "../../auth/UserContext";
 import { fetchWithTokenRefresh } from '../../utils/apiUtils';
 import DateTime from '../dateTime/DateTime';
@@ -138,7 +137,6 @@ export const Dashboard = () => {
 
     return (
         <div className='dashboard'>
-            <Header />
             <div className="dashboardContainer">
                 <h1 className='userName'>{user.first_name} {user.last_name}</h1>
                 <DateTime />

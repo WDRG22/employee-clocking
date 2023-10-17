@@ -31,12 +31,13 @@
     width: 22rem;
 }
 
-.login .header {
+.login h2 {
     color: var(--color-white);
     background-color: var(--color-medium-gray);
     box-shadow: none;
     text-align: center;
     margin-bottom: 0;
+    width: 100%;
 }
 
 .login .input {

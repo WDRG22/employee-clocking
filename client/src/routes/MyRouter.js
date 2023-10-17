@@ -6,6 +6,7 @@ import Signup from '../components/signup/Signup';
 import Login from '../components/login/Login';
 import Attendance from "../components/attendance/Attendance";
 import AdminDashboard from '../components/adminDashboard/AdminDashboard';
+import Settings from "../components/settings/Settings";
 import Layout from "../components/layout/Layout";
 
 const PrivateRoute = ({ children, requiresAdmin = false }) => {
@@ -35,6 +36,12 @@ function MyRouter() {
                 <Route path="/attendance" element={
                     <Layout>
                         <PrivateRoute><Attendance /></PrivateRoute>
+                    </Layout>
+                }/>
+
+                <Route path="/settings" element={
+                    <Layout>
+                        <PrivateRoute><Settings /></PrivateRoute>
                     </Layout>
                 }/>
                 

@@ -38,12 +38,15 @@ const Navbar = () => {
                 <div className='navbarLeft'>
                     <div className="navigationButtons">
                         <button className="navButton" onClick={() => navigate('/')}>Dashboard</button>
-                        <button className="navButton" onClick={() => navigate('/attendance')}>Account</button>
+                        {!user.is_admin && 
+                            <button className="navButton" onClick={() => navigate('/attendance')}>Attendance</button>
+                        }
                     </div>
                 </div>    
                     <img className='logoImage' src={logo} alt="Cyntra"/>
                 <div className='navbarRight'>
                     <div className='navigationButtons'>
+                        <button className="navButton" onClick={() => navigate('/settings')}>Settings</button>
                         <button className="logoutButton" onClick={logout}>Logout</button>
                     </div>
                 </div>
@@ -54,7 +57,9 @@ const Navbar = () => {
                 {isDropdownOpen && 
                 <div className="mobileDropdown">
                     <button className="mobileNavButton" onClick={() => navigate('/')}>Dashboard</button>
-                    <button className="mobileNavButton" onClick={() => navigate('/attendance')}>Account</button>
+                    {!user.is_admin && 
+                        <button className="mobileNavButton" onClick={() => navigate('/attendance')}>Attendance</button>
+                    }
                     <button className="mobileLogoutButton" onClick={logout}>Logout</button>
                 </div>}
             </div>

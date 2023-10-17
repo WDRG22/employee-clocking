@@ -49,8 +49,8 @@ const useClock = (user, setUser, setErrorMessage) => {
     const [clockEntry, setClockEntry] = useState(null);  
     const getLocation = useLocation();
 
-    const clock = async (endpoint, userId, currentTime, location, coordinates, tasks) => {
-    const payload = endpoint === '/api/work_entries/clock_in' ? { userId, currentTime, location, coordinates } : { userId, currentTime, location, coordinates, tasks };
+    const clock = async (endpoint, user_id, currentTime, location, coordinates, tasks) => {
+    const payload = endpoint === '/api/work_entries/clock_in' ? { user_id, currentTime, location, coordinates } : { user_id, currentTime, location, coordinates, tasks };
 
         try {
             const response = await fetchWithTokenRefresh(endpoint, {

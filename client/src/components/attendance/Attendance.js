@@ -61,8 +61,7 @@ const Attendance = () => {
 
     useEffect(() => {
         setFilteredData(filterByDateRange(attendanceData, startDate, endDate));
-    }, [attendanceData, startDate, endDate]);
-    
+    }, [attendanceData, startDate, endDate]);    
 
     useEffect(() => {
         setCurrentPage(1);
@@ -148,6 +147,7 @@ const Attendance = () => {
                     </button>
                 )}
             </div>
+            {error && <p className="error-message">{error}</p>}
         </div>
     );   
 }

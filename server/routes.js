@@ -26,12 +26,12 @@ router.post('/api/users/login', async (req, res, next) => {
 
             // Generate JWT token from unique user id
             const payload = {
-                userId: user.user_id // Use 'id' instead of '_id'
+                user_id: user.user_id // Use 'id' instead of '_id'
             };
             
             const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-            // Generate refresh token and insert into db w/ corresponding userid
+            // Generate refresh token and insert into db w/ corresponding user_id
             const refreshToken = crypto.randomBytes(64).toString('hex');
             await db.none(
                 'INSERT INTO refresh_tokens (token, user_id) VALUES ($1, $2)',
@@ -95,21 +95,21 @@ router.post('/api/users/logout', async (req, res) => {
 
 // Get user user data if logged in
 router.get('/api/users/user', async (req, res, next) => {
-    const userId = req.user ? req.user.userId : null;
-
+    const user_id = req.user ? req.user.user_id : null;
+    
     try {
-
+        
         // Get user data
         const userData = await db.oneOrNone(
             'SELECT * FROM users WHERE user_id = $1',
-            [userId]
+            [user_id]
         );
-        
+            
         // Check if user was found in the database
         if (!userData) {
             return res.status(404).json({ error: 'User not found' });
         };
-
+            
         const {password, ...userWithoutPassword } = userData;
         res.json({ user: userWithoutPassword });
     } catch (error) {
@@ -124,14 +124,14 @@ router.get('/api/users/user', async (req, res, next) => {
 
 // Clock in
 router.post('/api/work_entries/clock_in', async (req, res, next) => {
-    const { userId, currentTime, location, coordinates } = req.body;
+    const { user_id, currentTime, location, coordinates } = req.body;
     const coordinatesPoint = `(${coordinates.latitude}, ${coordinates.longitude})`;
 
     try {
         // Check for an incomplete entry for the user
         const incompleteEntry = await db.oneOrNone(
             'SELECT * FROM work_entries WHERE user_id = $1 AND clock_out_time IS NULL',
-            [userId]
+            [user_id]
         );
 
         if (incompleteEntry) {
@@ -141,12 +141,12 @@ router.post('/api/work_entries/clock_in', async (req, res, next) => {
 
         const clockEntry = await db.one(
             'INSERT INTO work_entries(user_id, clock_in_time, clock_in_location, clock_in_coordinates) VALUES($1, $2, $3, $4) RETURNING *',
-            [userId, currentTime, location, coordinatesPoint]
+            [user_id, currentTime, location, coordinatesPoint]
         );
 
         const userData = await db.oneOrNone(
             `SELECT * FROM users WHERE user_id = $1`
-        , [userId]);
+        , [user_id]);
 
         const {password, ...user} = userData
 
@@ -159,7 +159,7 @@ router.post('/api/work_entries/clock_in', async (req, res, next) => {
 
 // Clock-out
 router.post('/api/work_entries/clock_out', async (req, res, next) => {
-    const { userId, currentTime, location, coordinates, tasks } = req.body;
+    const { user_id, currentTime, location, coordinates, tasks } = req.body;
     const coordinatesPoint = `(${coordinates.latitude}, ${coordinates.longitude})`;
 
     try {
@@ -168,12 +168,12 @@ router.post('/api/work_entries/clock_out', async (req, res, next) => {
              SET clock_out_time = $2, clock_out_location = $3, clock_out_coordinates = $4, tasks = $5
              WHERE user_id = $1 AND clock_out_time IS NULL
              RETURNING *`,
-            [userId, currentTime, location, coordinatesPoint, tasks]
+            [user_id, currentTime, location, coordinatesPoint, tasks]
         );
 
         const userData = await db.oneOrNone(
             `SELECT * FROM users WHERE user_id = $1`, 
-            [userId]
+            [user_id]
         );
 
         if (!clockEntry) {
@@ -192,12 +192,12 @@ router.post('/api/work_entries/clock_out', async (req, res, next) => {
 
 // Get user's work entries
 router.get('/api/work_entries/user', async (req, res, next) => {
-    const userId = req.user.userId;
+    const user_id = req.user.user_id;
 
     try {
         const entries = await db.any(
             'SELECT * FROM work_entries WHERE user_id = $1 ORDER BY entry_id DESC', 
-            [userId]
+            [user_id]
         );
 
         res.json(entries);
@@ -269,6 +269,35 @@ router.delete('/api/admin/work_entries/:entry_id', async (req, res, next) => {
     }
 });
 
+router.post('/api/users/user/change_password', async (req, res, next) => {
+    const user_id = req.user.user_id;
+    const { oldPassword, newPassword } = req.body;
+
+    try {        
+        const user = await db.oneOrNone('SELECT * FROM users WHERE user_id = $1', [user_id]);
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const match = await bcrypt.compare(oldPassword, user.password);
+
+        if (!match) {
+            return res.status(401).json({ message: 'The entered password does not match your current password.' });
+        }
+
+        // Hash the new password and update it in the database
+        const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+        await db.none('UPDATE users SET password = $1 WHERE user_id = $2', [hashedPassword, user_id]);
+
+        // Respond with a success message
+        res.status(200).json({ message: 'Password changed successfully' });
+    } catch (error) {
+        console.error('Error changing password: ', error);
+        next(error);
+    }
+});
+
 
 // Refresh token
 router.post('/api/refresh_tokens/refresh', async (req, res, next) => {
@@ -278,7 +307,7 @@ router.post('/api/refresh_tokens/refresh', async (req, res, next) => {
 
     if (storedToken) {
         const payload = {
-            userId: storedToken.user_id
+            user_id: storedToken.user_id
         };
         const newToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
 

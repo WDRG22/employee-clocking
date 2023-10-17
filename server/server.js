@@ -15,19 +15,31 @@ app.use(express.json());
 const jwt = require('jsonwebtoken');
 app.use((req, res, next) => {
     const token = req.cookies.token;
-    if (token) {
-        try {
-            const decoded = jwt.verify(token, process.env.JWT_SECRET);
-            req.user = decoded;
-            next();
-        } catch (err) {
-            // handle the error (invalid token, etc.)
-            next(err);
+
+    // List of paths that don't require authentication
+    const excludedPaths = ['/api/users/login', '/api/users/signup', '/api/refresh_tokens/refresh'];
+
+    // If the request path is not in the excluded list
+    if (!excludedPaths.includes(req.path)) {
+        if (token) {
+            try {
+                const decoded = jwt.verify(token, process.env.JWT_SECRET);
+                req.user = decoded;
+                next();
+            } catch (err) {
+                // Invalid token
+                return res.status(401).json({ message: 'Invalid or expired token' });
+            }
+        } else {
+            // No token provided
+            return res.status(401).json({ message: 'Authentication token is required' });
         }
     } else {
+        // For excluded paths, continue without checking for a token
         next();
     }
 });
+
   
 // JWT middleware fails to verify token for some reason
 // app.use(expressjwt({

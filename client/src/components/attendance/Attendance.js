@@ -2,8 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { useUser } from '../../auth/UserContext';
 import DatePicker from 'react-datepicker';
 import { fetchWithTokenRefresh } from '../../utils/apiUtils';
+import {TailSpin} from 'react-loading-icons';
 import './Attendance.css'
 import 'react-datepicker/dist/react-datepicker.css';
+
+const filterByDateRange = (data, startDate, endDate) => {
+    if (!data) return [];
+    if (!startDate && !endDate) return data; // No filters applied
+
+    return data.filter(entry => {
+        const entryDate = new Date(entry.clock_in_time);
+        if (startDate && entryDate < startDate) return false;
+        if (endDate && entryDate > endDate) return false;
+        return true;
+    });
+};
 
 const Attendance = () => {
     const { user } = useUser();
@@ -14,6 +27,7 @@ const Attendance = () => {
     const [attendanceData, setAttendanceData] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage] = useState(10);
+    const [filteredData, setFilteredData] = useState(null);
 
     useEffect(() => {
         const fetchUserAccountData = async () => {
@@ -45,20 +59,27 @@ const Attendance = () => {
         fetchUserAccountData();
     }, [user]);
 
+    useEffect(() => {
+        setFilteredData(filterByDateRange(attendanceData, startDate, endDate));
+    }, [attendanceData, startDate, endDate]);
+    
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [filteredData]);
+
     const lastRowIndex = currentPage * rowsPerPage;
     const firstRowIndex = lastRowIndex - rowsPerPage;
-    const currentData = attendanceData?.slice(firstRowIndex, lastRowIndex);
-        
-    const totalPages = attendanceData ? Math.ceil(attendanceData.length / rowsPerPage) : 0;
+    const currentData = filteredData?.slice(firstRowIndex, lastRowIndex);        
+    const totalPages = filteredData ? Math.ceil(filteredData.length / rowsPerPage) : 0;
     const numPagesToShow = 2;
     const startPage = Math.max(1, currentPage - numPagesToShow);
     const endPage = Math.min(totalPages, currentPage + numPagesToShow);
 
-
-
     return (
         <div className='attendanceContainer'>
             <h2>Recent Attendance</h2>
+            {isLoading && <TailSpin className='loadingSpinner'/>}
     
             <div className='tableControls'>
                 <div className="dateRange">

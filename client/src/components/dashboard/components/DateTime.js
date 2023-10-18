@@ -10,8 +10,8 @@ const DateTime = () => {
 
     return (
         <div className='timeDisplayContainer'>
-            <p className="timeDisplay">Local Date : {date.toLocaleDateString()}</p>
-            <p className="timeDisplay">Local Time : {date.toLocaleTimeString()}</p>                                        
+            <p className="timeDisplay">Local Date: {date.toLocaleDateString()}</p>
+            <p className="timeDisplay">Local Time: {date.toLocaleTimeString()}</p>                                        
         </div>
     );
 };

@@ -11,6 +11,12 @@
     margin-bottom: 1rem;
 }
 
+.attendanceContainer .tableControls .nextPrevButtons{
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
 .attendanceContainer .tableControls button {
     border-radius: .5rem;
     background-color: var(--color-primary-blue);

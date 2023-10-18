@@ -26,23 +26,27 @@ function MyRouter() {
                 <Route path="/signup" element={user ? <Navigate to="/" replace /> : <Signup />}/>
                 
                 <Route path="/" element={
-                    <Layout>
-                        <PrivateRoute>
+                    <PrivateRoute>
+                        <Layout>
                             {user?.is_admin ? <AdminDashboard /> : <Dashboard />}
-                        </PrivateRoute>
-                    </Layout>
+                        </Layout>
+                    </PrivateRoute>
                 }/>
                 
                 <Route path="/attendance" element={
-                    <Layout>
-                        <PrivateRoute><Attendance /></PrivateRoute>
-                    </Layout>
+                    <PrivateRoute>
+                        <Layout>
+                            <Attendance />
+                        </Layout>
+                    </PrivateRoute>
                 }/>
 
                 <Route path="/settings" element={
-                    <Layout>
-                        <PrivateRoute><Settings /></PrivateRoute>
-                    </Layout>
+                    <PrivateRoute>
+                        <Layout>
+                            <Settings />
+                        </Layout>
+                    </PrivateRoute>
                 }/>
                 
                 <Route path="*" element={<Layout><Navigate to="/" /></Layout>} /> 

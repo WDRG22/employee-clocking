@@ -44,7 +44,6 @@ const Attendance = () => {
                 if (response.ok) {
                     const data = await response.json();
                     setAttendanceData(data);
-                    console.log("Attendance data: ", data)
                 } else {
                     setAttendanceData([]);
                     setError("Unable to fetch work entries.");
@@ -88,13 +87,14 @@ const Attendance = () => {
                     <DatePicker selected={endDate} onChange={date => setEndDate(date)} placeholderText="Select Date" />
                 </div>
                 
-                {/* Previous and Next page buttons */}
-                <button onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))} disabled={currentPage === 1}>
-                    Previous
-                </button>
-                <button onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))} disabled={currentPage === totalPages}>
-                    Next
-                </button>
+                <div className='nextPrevButtons'>
+                    <button onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))} disabled={currentPage === 1}>
+                        Previous
+                    </button>
+                    <button onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))} disabled={currentPage === totalPages}>
+                        Next
+                    </button>
+                </div>
             </div>
     
             <table>

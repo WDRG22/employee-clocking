@@ -60,10 +60,9 @@ function Settings() {
                 <div className='accountInfo'>
                     <h1>Settings</h1>
                     <h2>Account Information</h2>
+                    <p>{user.first_name} {user.last_name}</p>
                     <p>User ID: {user.user_id}</p>
                     <p>Email: {user.email}</p>
-                    <p>First Name: {user.first_name}</p>
-                    <p>Last Name: {user.last_name}</p>
                 </div>
                 <div className='passwordChange'>
                     <h2>Change Password</h2>

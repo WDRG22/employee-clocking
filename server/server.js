@@ -40,16 +40,6 @@ app.use((req, res, next) => {
     }
 });
 
-  
-// JWT middleware fails to verify token for some reason
-// app.use(expressjwt({
-//     secret: process.env.JWT_SECRET,
-//     algorithms: ['HS256'],
-//     getToken: req => req.cookies ? req.cookies.token : null
-// }).unless({
-// path: ['/api/login', '/api/signup', /^\/(?!api\/).*/]
-// }));
-
 // Hit defined routes
 app.use(routes);
 

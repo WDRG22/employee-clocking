@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { TailSpin } from 'react-loading-icons';
 
 export const AdminDashboard = () => {
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
 
     return (

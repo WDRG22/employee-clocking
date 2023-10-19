@@ -8,6 +8,8 @@ import Attendance from "../components/attendance/Attendance";
 import AdminDashboard from '../components/adminDashboard/AdminDashboard';
 import Settings from "../components/settings/Settings";
 import Layout from "../components/layout/Layout";
+import UserList from "../components/userList/UserList";
+import UserDetail from '../components/userDetail/UserDetail';
 
 const PrivateRoute = ({ children, requiresAdmin = false }) => {
     const { user } = useUser();
@@ -37,6 +39,14 @@ function MyRouter() {
                     <PrivateRoute>
                         <Layout>
                             <Attendance />
+                        </Layout>
+                    </PrivateRoute>
+                }/>
+
+                <Route path="/employee/:employee_id" element={
+                    <PrivateRoute>
+                        <Layout>
+                            <UserDetail />
                         </Layout>
                     </PrivateRoute>
                 }/>

@@ -1,3 +1,15 @@
 .adminDashboard {
-    margin: auto;
+    height: 92vh;
+    width: 100vw;
+    margin-top: 8vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.adminDashboard .adminDashHeader{
+    color: var(--color-white);
+    align-self: flex-start;
+    margin: 2rem 0 0 4rem;
 }

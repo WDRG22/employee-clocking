@@ -13,7 +13,6 @@ export async function encodeLocation(coord) {
         }
 
         const data = await response.json();
-        console.log('location data', data)
         if (data.display_name) {
             return data.display_name;
         } else {

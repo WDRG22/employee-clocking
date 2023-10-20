@@ -74,8 +74,8 @@ const EmployeeList = () => {
               <th>ID</th>
               <th>Full Name</th>
               <th>Email</th>
-              <th>Clocked In</th> {/* Added column header */}
-              <th>Is Admin</th>   {/* Added column header */}
+              <th>Clocked In</th>
+              <th>Is Admin</th>
             </tr>
           </thead>
           <tbody>

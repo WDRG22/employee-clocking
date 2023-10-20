@@ -55,13 +55,19 @@ function Settings() {
 
     return (
         <div className='settings'>
+            <h1>Settings</h1>
             <div className='accountCard'>
                 <div className='accountInfo'>
-                    <h1>Settings</h1>
                     <h2>Account Information</h2>
                     <p>{employee.first_name} {employee.last_name}</p>
                     <p>Employee ID: {employee.employee_id}</p>
                     <p>Email: {employee.email}</p>
+                    <p className={employee.is_clocked_in ? 'isClockedIn' : 'isNotClockedIn'}>
+                        {`Clocked In: ${employee.is_clocked_in ? 'Yes' : 'No'}`}
+                    </p>
+                    <p>
+                    {`Admin: ${employee.is_admin ? 'Yes' : 'No'}`}
+                    </p>
                 </div>
                 <div className='passwordChange'>
                     <h2>Change Password</h2>

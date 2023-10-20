@@ -1,8 +1,6 @@
 .employeeList{
-    height: 92vh;
-    width: 100vw;
-    margin-top: 4vh;
-    margin-bottom: 4vh;
+    height: 100%;
+    width: 100%;
     overflow: auto;
 }
 

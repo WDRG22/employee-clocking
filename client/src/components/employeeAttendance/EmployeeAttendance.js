@@ -22,6 +22,7 @@ const filterByDateRange = (data, startDate, endDate) => {
 const EmployeeAttendance = () => {
     const { employee_id: routeEmployeeId } = useParams();  // Extract employee_id from the route
     const { employee } = useEmployee();
+    const [viewingEmployeeData, setViewingEmployeeData] = useState("");
     const [ isLoading, setIsLoading ] = useState(false);
     const [error, setError] = useState(null);
     const [startDate, setStartDate] = useState(null);
@@ -35,11 +36,28 @@ const EmployeeAttendance = () => {
         const fetchEmployeeAccountData = async () => {
             setIsLoading(true);
             try {
-                
-                // If user is an admin and a valid employee_id is provided in the route, use that.
-                // Otherwise, default to the logged-in user's employee_id.
                 const empId = (employee.is_admin && routeEmployeeId) ? routeEmployeeId : employee.employee_id;
-
+                if (empId !== employee.employee_id) {
+                    // If it's a different employee, fetch their details
+                    const empResponse = await fetchWithTokenRefresh(`/api/employees/${empId}`, {
+                        method: 'GET',
+                        credentials: 'include',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+    
+                    if (empResponse.ok) {
+                        const empData = await empResponse.json();
+                        setViewingEmployeeData(empData.employee);
+                    } else {
+                        setError("Unable to fetch employee details.");
+                    }
+                } else {
+                    // If it's the same employee, use the context
+                    setViewingEmployeeData(employee);
+                }
+    
                 const response = await fetchWithTokenRefresh(`/api/work_entries/${empId}`, {
                     method: 'GET',
                     credentials: 'include',
@@ -47,23 +65,25 @@ const EmployeeAttendance = () => {
                         'Content-Type': 'application/json'
                     }
                 });
-
+    
                 if (response.ok) {
-                    const data = await response.json();
-                    setAttendanceData(data);
+                    const attendanceData = await response.json();
+                    setAttendanceData(attendanceData);
                 } else {
                     setAttendanceData([]);
                     setError("Unable to fetch work entries.");
                 }
             } catch (error) {
-                setError("Error fetching account data.");
+                console.log('error', error)
+                setError("Error fetching account data. ");
             } finally {
                 setIsLoading(false);
             }
         };
-
+    
         fetchEmployeeAccountData();
     }, [employee]);
+    
 
     useEffect(() => {
         setFilteredData(filterByDateRange(attendanceData, startDate, endDate));
@@ -84,7 +104,7 @@ const EmployeeAttendance = () => {
     return (
         <div className='attendance'>
             <div className='attendanceContainer'>
-                <h2>Recent Attendance</h2>
+            <h1>{viewingEmployeeData ? `${viewingEmployeeData.first_name} ${viewingEmployeeData.last_name}'s Attendance` : 'Loading...'}</h1>
                 {isLoading && <TailSpin className='loadingSpinner'/>}
         
                 <div className='tableControls'>
@@ -106,29 +126,29 @@ const EmployeeAttendance = () => {
                 </div>
         
                 <table>
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Clock In</th>
-                        <th>Clock Out</th>
-                        <th>Hours Worked</th>
-                        <th>Location</th>
-                        <th>Tasks</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {currentData && currentData.map((entry, index) => (
-                        <tr key={index}>
-                            <td>{new Date(entry.clock_in_time).toLocaleDateString()}</td>
-                            <td>{new Date(entry.clock_in_time).toLocaleTimeString()}</td>
-                            <td>{new Date(entry.clock_out_time).toLocaleTimeString()}</td>
-                            <td>{entry.hours_worked}</td>
-                            <td>{entry.clock_in_location}</td> {/* Added this line */}
-                            <td>{entry.tasks}</td>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Clock In</th>
+                            <th>Clock Out</th>
+                            <th>Hours Worked</th>
+                            <th>Location</th>
+                            <th>Tasks</th>
                         </tr>
-                    ))}
-                </tbody>
-                </table> 
+                    </thead>
+                    <tbody>
+                        {currentData ? currentData.map((entry, index) => (
+                            <tr key={index}>
+                                <td>{new Date(entry.clock_in_time).toLocaleDateString()}</td>
+                                <td>{new Date(entry.clock_in_time).toLocaleTimeString()}</td>
+                                <td>{new Date(entry.clock_out_time).toLocaleTimeString()}</td>
+                                <td>{entry.hours_worked}</td>
+                                <td>{entry.clock_in_location}</td>
+                                <td>{entry.tasks}</td>
+                            </tr>
+                        )) : null}
+                    </tbody>
+                </table>
         
                 <div className="pagination">
                     {/* Pagination controls */}

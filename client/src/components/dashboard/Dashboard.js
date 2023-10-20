@@ -9,6 +9,7 @@ const Dashboard = () => {
 
     return (
         <div className='dashboard'>
+            <h1 className='dashboardHeader'>Dashboard</h1>
             <div className="dashboardContainer">
                 <h1 className='employeeName'>{employee.first_name} {employee.last_name}</h1>
                 <DateTime />

@@ -1,11 +1,15 @@
 .dashboard {
-    height: 92vh;
     width: 100vw;
+    height: 92vh;
     margin-top: 8vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+}
+
+
+.dashboard .dashboardHeader {
+    color: var(--color-white);
+    margin: 0;
+    padding: 2rem 0 2rem 4rem;
+
 }
 
 .dashboard .dashboardContainer {

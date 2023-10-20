@@ -1,6 +1,4 @@
 html {
-    margin: 0;
-    padding: 0;
     font-size: 100%; 
     box-sizing: border-box;
 }
@@ -9,16 +7,12 @@ html {
     box-sizing: inherit;
 }
 
-html, body {
+html, body, #root, main {
     height: 100%;
     width: 100%;
-    overflow: hidden;
-  }
-
-body, #root {
-    min-height: 100%; 
     margin: 0;
     padding: 0;
+    overflow: auto;
     background-color: var(--color-dark-gray);
 }
 
@@ -39,7 +33,6 @@ body, #root {
 
 body {
     font-family: 'Arial', sans-serif;
-    background-color: var(--color-dark-gray);
 }
 
 h1, h2, h3, h4, h5, h6 {

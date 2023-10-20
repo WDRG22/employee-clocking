@@ -257,6 +257,35 @@ router.get('/employees', async (req, res, next) => {
     }
 });
 
+// Get specific employee's data
+router.get('/employees/:employee_id', async (req, res, next) => {
+    const employee_id = req.params.employee_id;
+    
+    try {
+        
+        // Get employee data
+        const employeeData = await db.oneOrNone(
+            'SELECT * FROM employees WHERE employee_id = $1',
+            [employee_id]
+        );
+            
+        // Check if employee was found in the database
+        if (!employeeData) {
+            return res.status(404).json({ error: 'Employee not found' });
+        };
+            
+        const {password, ...employeeWithoutPassword } = employeeData;
+        res.json({ employee: employeeWithoutPassword });
+    } catch (error) {
+        console.log(error);
+        if (error.message.includes('Not authenticated') || error.message.includes('Employee not found')) {
+            res.status(401).json({ error: error.message });
+        } else {
+            next(error);
+        }
+    }
+});
+
 // Refresh token
 router.post('/refresh_tokens/refresh', async (req, res, next) => {
     const { refreshToken } = req.cookies;

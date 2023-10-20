@@ -7,59 +7,71 @@ const cookieParser = require('cookie-parser');
 const app = express();
 const routes = require('./routes.js');
 
+// Log incoming requests
+app.use((req, res, next) => {
+    console.log(`Received request: ${req.method} ${req.path}`);
+    next();
+});
+
 // Process JSON data
 app.use(cookieParser());
 app.use(express.json());
 
-// Manual jwt verification. Decodes token to 'req.employee' for use in routes
-const jwt = require('jsonwebtoken');
-app.use((req, res, next) => {
-    const token = req.cookies.token;
-
-    // List of paths that don't require authentication
-    const excludedPaths = ['/api/employees/login', '/api/employees/signup', '/api/refresh_tokens/refresh'];
-
-    // If the request path is not in the excluded list
-    if (!excludedPaths.includes(req.path)) {
-        if (token) {
-            try {
-                const decoded = jwt.verify(token, process.env.JWT_SECRET);
-                req.employee = decoded;
-                console.log('decoded cookie: ', decoded)
-                next();
-            } catch (err) {
-                // Invalid token
-                return res.status(401).json({ message: 'Invalid or expired token' });
-            }
-        } else {
-            // No token provided
-            return res.status(401).json({ message: 'Authentication token is required' });
-        }
-    } else {
-        // For excluded paths, continue without checking for a token
-        next();
-    }
-});
-
-// Hit defined routes
-app.use(routes);
-
 // Serve static files
 app.use(express.static(path.join(__dirname, '../client/build')));
 
-// Serve SPA for client-side routes
-app.get(['/login', '/signup'], (req, res) => {
-    res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
-});
+const sendErrorResponse = (res, message, statusCode = 401) => {
+    console.error(message);
+    return res.status(statusCode).json({ message });
+};
 
-// Catch-all for 404
+// JWT token for authentication
+const jwt = require('jsonwebtoken');
+
+const jwtMiddleware = (req, res, next) => {
+    const token = req.cookies.token;
+    const fullPath = req.baseUrl + req.path;
+    const excludedPaths = [
+        '/api/employees/login',
+        '/api/employees/signup', 
+        '/api/refresh_tokens/refresh'
+    ];
+
+    console.log(`Incoming request to: ${fullPath}`);
+
+    if (!excludedPaths.includes(fullPath)) {
+        if (!token) {
+            return sendErrorResponse(res, `No token provided for: ${fullPath}`);
+        }
+
+        try {
+            if (!process.env.JWT_SECRET) {
+                throw new Error("JWT_SECRET environment variable is required");
+            }            
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            req.employee = decoded;
+            next();
+        } catch (err) {
+            console.error("JWT error:", err);
+            return sendErrorResponse(res, 'Invalid or expired token');
+        }
+    } else {
+        console.log(`Bypassing JWT middleware for: ${fullPath}`);
+        next();
+    }
+};
+
+// Use the JWT middleware for API server routes
+app.use('/api', jwtMiddleware, routes);
+
+// Serve SPA for client-side routes (fallback for any routes not caught by express)
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../client/build', '404.html'));
+    res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
 });
 
 // Error-handling middleware
 app.use((error, req, res, next) => {
-    if (error.name === "UnauthorizedError") {  // Check if it's a JWT error
+    if (error.name === "UnauthorizedError") {
         return res.status(401).json({ message: 'Token verification failed', error: error.message });
     }
     

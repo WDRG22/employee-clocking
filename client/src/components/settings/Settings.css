@@ -1,20 +1,28 @@
 .settings {
-    margin-top: 10vh;
+    height: 92vh;
+    width: 100vw;
+    margin-top: 8vh;
     display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.settings div {
+.settings .accountCard {
     font-family: Arial, sans-serif;
-    margin: 0 auto;
+    margin-bottom: 8vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
-.settings h1 {
+.settings .accountCard h1 {
     font-size: 24px;
     color: var(--color-white);
     margin-bottom: 20px;
 }
 
-.settings h2 {
+.settings .accountCard h2 {
     font-size: 20px;
     color: var(--color-light-blue);
     margin-top: 30px;
@@ -23,18 +31,24 @@
     padding-bottom: 5px;
 }
 
-.settings p {
+.settings .accountCard p {
     font-size: 16px;
     color: var(--color-white);
     margin-bottom: 10px;
 }
 
-.settings .passwordChangeInputs{
+.settings .accountCard .accountInfo,
+.settings .accountCard .passwordChange {
+    width: 100%;
+    margin: 0;
+}
+
+.settings .accountCard .passwordChangeInputs{
     width: 60%;
     margin: 0;
 }
 
-.settings input[type="password"] {
+.settings .accountCard input[type="password"] {
     width: 100%;
     padding: 5px;
     margin-bottom: 10px;
@@ -45,19 +59,19 @@
     transition: border-color 0.3s;
 }
 
-.settings input[type="password"]:focus {
+.settings .accountCard input[type="password"]:focus {
     border-color: var(--color-primary-blue);
 }
 
-.settings .errorMessage {
+.settings .accountCard .errorMessage {
     color: var(--color-red);
 }
 
-.settings .successMessage {
+.settings .accountCard .successMessage {
     color: var(--color-green);
 }
 
-.settings button {
+.settings .accountCard button {
     background-color: var(--color-primary-blue);
     color: var(--color-white);
     padding: 10px 15px;
@@ -68,6 +82,6 @@
     transition: background-color 0.3s;
 }
 
-.settings button:hover {
+.settings .accountCard button:hover {
     background-color: var(--color-dark-blue);
 }

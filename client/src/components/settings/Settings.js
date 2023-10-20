@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { useEmployee } from '../../auth/EmployeeContext';
-import './Settings.css';
 import { fetchWithTokenRefresh } from '../../utils/apiUtils';
-import TailSpin from 'react-loading-icons/dist/esm/components/tail-spin';
+import './Settings.css';
 
 function Settings() {
     const { employee } = useEmployee();

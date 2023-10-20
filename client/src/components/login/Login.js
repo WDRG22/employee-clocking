@@ -43,7 +43,7 @@ export const Login = () => {
             }
         } catch (err) {
             console.error("An error occurred:", err);
-            setIncorrectDetailsError("Incorrect email or password. Please try again.");
+            setIncorrectDetailsError("Failed to connect to the server. Please try again.");
         }
     }
 

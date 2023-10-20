@@ -1,18 +1,19 @@
 import React from "react";
 import {BrowserRouter, Routes, Route, Navigate} from "react-router-dom";
 import { useEmployee } from "../auth/EmployeeContext";
-import Dashboard from '../components/dashboard/Dashboard';
-import Signup from '../components/signup/Signup';
 import Login from '../components/login/Login';
+import Signup from '../components/signup/Signup';
+import Layout from "../components/layout/Layout";
+import Dashboard from '../components/dashboard/Dashboard';
 import AdminDashboard from '../components/adminDashboard/AdminDashboard';
 import Settings from "../components/settings/Settings";
-import Layout from "../components/layout/Layout";
 import EmployeeAttendance from '../components/employeeAttendance/EmployeeAttendance';
+import NotFound from "../components/notFound/NotFound";
 
 const PrivateRoute = ({ children, requiresAdmin = false }) => {
     const { employee } = useEmployee();
     if (!employee) return <Navigate to="/login" replace />;
-    if (requiresAdmin && !employee.isAdmin) return <Navigate to="/" replace />;
+    if (requiresAdmin && !employee.is_admin) return <Navigate to="/" replace />;
     return children;
 }
 
@@ -49,7 +50,7 @@ function MyRouter() {
                     </PrivateRoute>
                 }/>
                 
-                <Route path="*" element={<Layout><Navigate to="/" /></Layout>} /> 
+                <Route path="*" element={<NotFound />} /> 
             </Routes>
         </BrowserRouter>
     );

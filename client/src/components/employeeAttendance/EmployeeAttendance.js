@@ -39,7 +39,6 @@ const EmployeeAttendance = () => {
                 // If user is an admin and a valid employee_id is provided in the route, use that.
                 // Otherwise, default to the logged-in user's employee_id.
                 const empId = (employee.is_admin && routeEmployeeId) ? routeEmployeeId : employee.employee_id;
-                console.log("employee attendance, with empId: ", empId);
 
                 const response = await fetchWithTokenRefresh(`/api/work_entries/${empId}`, {
                     method: 'GET',
@@ -107,26 +106,28 @@ const EmployeeAttendance = () => {
                 </div>
         
                 <table>
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Clock In</th>
-                            <th>Clock Out</th>
-                            <th>Hours Worked</th>
-                            <th>Tasks</th>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Clock In</th>
+                        <th>Clock Out</th>
+                        <th>Hours Worked</th>
+                        <th>Location</th>
+                        <th>Tasks</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {currentData && currentData.map((entry, index) => (
+                        <tr key={index}>
+                            <td>{new Date(entry.clock_in_time).toLocaleDateString()}</td>
+                            <td>{new Date(entry.clock_in_time).toLocaleTimeString()}</td>
+                            <td>{new Date(entry.clock_out_time).toLocaleTimeString()}</td>
+                            <td>{entry.hours_worked}</td>
+                            <td>{entry.clock_in_location}</td> {/* Added this line */}
+                            <td>{entry.tasks}</td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        {currentData && currentData.map((entry, index) => (
-                            <tr key={index}>
-                                <td>{new Date(entry.clock_in_time).toLocaleDateString()}</td>
-                                <td>{new Date(entry.clock_in_time).toLocaleTimeString()}</td>
-                                <td>{new Date(entry.clock_out_time).toLocaleTimeString()}</td>
-                                <td>{entry.hours_worked}</td>
-                                <td>{entry.tasks}</td>
-                            </tr>
-                        ))}
-                    </tbody>
+                    ))}
+                </tbody>
                 </table> 
         
                 <div className="pagination">

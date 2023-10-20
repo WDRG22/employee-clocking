@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useLocation, encodeLocation } from './useLocation';
 import { fetchWithTokenRefresh } from '../../../utils/apiUtils';
 
-const useClock = (employee, setEmployee, setErrorMessage, setIsLoading) => {
+const useClock = (employee, setEmployee, setErrorMessage, isLoading, setIsLoading) => {
     const [clockEntry, setClockEntry] = useState(null);  
     const getLocation = useLocation();
 
@@ -19,7 +19,7 @@ const useClock = (employee, setEmployee, setErrorMessage, setIsLoading) => {
             setClockEntry(data.clockEntry)
             setEmployee(data.employee);
         } catch (error) {
-            console.log(error)
+            console.error(error)
         }
         setIsLoading(false);
     };

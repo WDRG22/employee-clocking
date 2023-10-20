@@ -19,8 +19,9 @@ const saltRounds = 10;
 
 // Login employee
 // Generates JWT and refresh tokens, sent as cookies
-router.post('/api/employees/login', async (req, res, next) => {
+router.post('/employees/login', async (req, res, next) => {
     const { email, password } = req.body;
+    console.log("Hitting /employees/login");
     try {
         const employee = await db.oneOrNone('SELECT * FROM employees WHERE email = $1', [email]);
         
@@ -65,7 +66,7 @@ router.post('/api/employees/login', async (req, res, next) => {
 });
 
 // Create new employee
-router.post('/api/employees/signup', async (req, res, next) => {
+router.post('/employees/signup', async (req, res, next) => {
     const { firstName, lastName, email, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
@@ -82,7 +83,7 @@ router.post('/api/employees/signup', async (req, res, next) => {
 });
 
 // Logout current employee
-router.post('/api/employees/logout', async (req, res) => {
+router.post('/employees/logout', async (req, res) => {
     // Clear JWT and refresh token cookies
     res.clearCookie('token');
     res.clearCookie('refreshToken');
@@ -96,7 +97,7 @@ router.post('/api/employees/logout', async (req, res) => {
 });
 
 // Get current employee's data
-router.get('/api/employees/employee', async (req, res, next) => {
+router.get('/employees/employee', async (req, res, next) => {
     const employee_id = req.employee ? req.employee.employee_id : null;
     
     try {
@@ -125,7 +126,7 @@ router.get('/api/employees/employee', async (req, res, next) => {
 });
 
 // Get an employee's work entry data
-router.get('/api/work_entries/:employee_id', async (req, res, next) => {
+router.get('/work_entries/:employee_id', async (req, res, next) => {
     const employee_id = req.params.employee_id;
 
     try {
@@ -142,7 +143,7 @@ router.get('/api/work_entries/:employee_id', async (req, res, next) => {
 });
 
 // Clock current employee in
-router.post('/api/work_entries/clock_in', async (req, res, next) => {
+router.post('/work_entries/clock_in', async (req, res, next) => {
     const { employee_id, currentTime, location, coordinates } = req.body;
     const coordinatesPoint = `(${coordinates.latitude}, ${coordinates.longitude})`;
 
@@ -177,7 +178,7 @@ router.post('/api/work_entries/clock_in', async (req, res, next) => {
 });
 
 // Clock current employee out
-router.post('/api/work_entries/clock_out', async (req, res, next) => {
+router.post('/work_entries/clock_out', async (req, res, next) => {
     const { employee_id, currentTime, location, coordinates, tasks } = req.body;
     const coordinatesPoint = `(${coordinates.latitude}, ${coordinates.longitude})`;
 
@@ -210,7 +211,7 @@ router.post('/api/work_entries/clock_out', async (req, res, next) => {
 });
 
 // Change current employee's password
-router.post('/api/employees/employee/change_password', async (req, res, next) => {
+router.post('/employees/employee/change_password', async (req, res, next) => {
     const employee_id = req.employee.employee_id;
     const { oldPassword, newPassword } = req.body;
 
@@ -242,7 +243,7 @@ router.post('/api/employees/employee/change_password', async (req, res, next) =>
 // ADMIN ROUTES
 
 // Get all employees
-router.get('/api/employees', async (req, res, next) => {
+router.get('/employees', async (req, res, next) => {
     try {
         // Query the database to retrieve all employees
         const employees = await db.any('SELECT * FROM employees');
@@ -257,7 +258,7 @@ router.get('/api/employees', async (req, res, next) => {
 });
 
 // Refresh token
-router.post('/api/refresh_tokens/refresh', async (req, res, next) => {
+router.post('/refresh_tokens/refresh', async (req, res, next) => {
     const { refreshToken } = req.cookies;
     
     const storedToken = await db.oneOrNone('SELECT employee_id FROM refresh_tokens WHERE token = $1', [refreshToken]);

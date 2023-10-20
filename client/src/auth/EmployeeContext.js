@@ -28,7 +28,6 @@ export const EmployeeProvider = ({ children }) => {
                 
                 if (response.ok) {
                     const data = await response.json();                     
-                    console.log("EmployeeContext employee data:", data.employee)
                     setEmployee(data.employee);
                 } else {
                     setEmployee(null);

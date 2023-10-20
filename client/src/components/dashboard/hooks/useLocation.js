@@ -4,7 +4,7 @@ import { useState } from 'react';
 export async function encodeLocation(coord) {
     const lat = coord.latitude;
     const lng = coord.longitude;
-    const baseUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`;
+    const baseUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=14&addressdetails=1`;
 
     try {
         const response = await fetch(baseUrl);
@@ -13,6 +13,7 @@ export async function encodeLocation(coord) {
         }
 
         const data = await response.json();
+        console.log('location data', data)
         if (data.display_name) {
             return data.display_name;
         } else {

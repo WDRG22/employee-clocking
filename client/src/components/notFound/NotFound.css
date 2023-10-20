@@ -1,0 +1,34 @@
+.notFound body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 50px;
+    background-color: rgb(33, 37, 41);
+}
+
+.notFound .container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid rgb(169, 169, 169);
+    border-radius: 4px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+.notFound h1 {
+    font-size: 48px;
+    color: rgb(220, 80, 70);
+}
+
+.notFound p {
+    font-size: 18px;
+    color: rgb(77, 81, 85);
+}
+
+.notFound a {
+    color: rgb(63, 154, 243);
+    text-decoration: none;
+}
+
+.notFound a:hover {
+    text-decoration: underline;
+}

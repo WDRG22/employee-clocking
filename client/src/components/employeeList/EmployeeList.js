@@ -51,69 +51,78 @@ const EmployeeList = () => {
   const endPage = Math.min(totalPages, currentPage + numPagesToShow);
 
   return (
-    <div className='employeeListContainer'>
-      <h1>Employee List</h1>
+    <div className='employeeList'>
+      <div className='employeeListContainer'>
+        <h1>Employee List</h1>
 
-      {isLoading && <TailSpin className='loadingSpinner'/>}
+        {isLoading && <TailSpin className='loadingSpinner'/>}
 
-      <div className='tableControls'>
-        <div className='nextPrevButtons'>
-          <button onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))} disabled={currentPage === 1}>
-            Previous
-          </button>
-          <button onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))} disabled={currentPage === totalPages}>
-            Next
-          </button>
-        </div>
-      </div>
-
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Full Name</th>
-            <th>Email</th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentData.map((employee) => (
-            <tr key={employee.employee_id} onClick={() => handleRowClick(employee.employee_id)}>
-              <td>{employee.employee_id}</td>
-              <td>{employee.first_name} {employee.last_name}</td>
-              <td>{employee.email}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      <div className="pagination">
-        {startPage > 1 && (
-          <button onClick={() => setCurrentPage(1)} disabled={currentPage === 1}>
-            1
-          </button>
-        )}
-        {startPage > 2 && <span>...</span>}
-        {Array.from({ length: endPage - startPage + 1 }, (_, index) => {
-          const pageNum = startPage + index;
-          return (
-            <button
-              key={pageNum}
-              onClick={() => setCurrentPage(pageNum)}
-              className={currentPage === pageNum ? 'active' : ''}
-            >
-              {pageNum}
+        <div className='tableControls'>
+          <div className='nextPrevButtons'>
+            <button onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))} disabled={currentPage === 1}>
+              Previous
             </button>
-          );
-        })}
-        {endPage < totalPages - 1 && <span>...</span>}
-        {endPage < totalPages && (
-          <button onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages}>
-            {totalPages}
-          </button>
-        )}
-      </div>
+            <button onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))} disabled={currentPage === totalPages}>
+              Next
+            </button>
+          </div>
+        </div>
 
-      {error && <p className="error-message">{error}</p>}
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Full Name</th>
+              <th>Email</th>
+              <th>Clocked In</th> {/* Added column header */}
+              <th>Is Admin</th>   {/* Added column header */}
+            </tr>
+          </thead>
+          <tbody>
+            {currentData.map((employee) => (
+              <tr key={employee.employee_id} onClick={() => handleRowClick(employee.employee_id)}>
+                <td>{employee.employee_id}</td>
+                <td>{employee.first_name} {employee.last_name}</td>
+                <td>{employee.email}</td>
+                <td className={employee.is_clocked_in ? 'isClockedIn' : 'isNotClockedIn'}>
+                  {employee.is_clocked_in ? 'Yes' : 'No'}
+                </td>
+                <td>{employee.is_admin ? 'Yes' : 'No'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+
+        <div className="pagination">
+          {startPage > 1 && (
+            <button onClick={() => setCurrentPage(1)} disabled={currentPage === 1}>
+              1
+            </button>
+          )}
+          {startPage > 2 && <span>...</span>}
+          {Array.from({ length: endPage - startPage + 1 }, (_, index) => {
+            const pageNum = startPage + index;
+            return (
+              <button
+                key={pageNum}
+                onClick={() => setCurrentPage(pageNum)}
+                className={currentPage === pageNum ? 'active' : ''}
+              >
+                {pageNum}
+              </button>
+            );
+          })}
+          {endPage < totalPages - 1 && <span>...</span>}
+          {endPage < totalPages && (
+            <button onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages}>
+              {totalPages}
+            </button>
+          )}
+        </div>
+
+        {error && <p className="error-message">{error}</p>}
+      </div>
     </div>
   );
 };

@@ -1,5 +1,14 @@
+.employeeList{
+    height: 92vh;
+    width: 100vw;
+    margin-top: 4vh;
+    margin-bottom: 4vh;
+    overflow: auto;
+}
+
 .employeeListContainer {
-    margin-top: 10vh;
+    margin-top: 5vh;
+    margin-bottom: 5vh;
     margin-left: 5rem;
     margin-right: 5rem;
 }
@@ -107,4 +116,12 @@
     color: var(--color-danger-red);
     margin-top: 1rem;
     font-size: 18px;
+}
+
+.employeeListContainer .isClockedIn {
+    color: var(--color-green);
+}
+
+.employeeListContainer .isNotClockedIn {
+    color: var(--color-red);
 }

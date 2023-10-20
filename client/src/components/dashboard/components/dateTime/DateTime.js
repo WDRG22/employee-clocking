@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import "./DateTime.css";
 
 const DateTime = () => {
     const [date, setDate] = useState(new Date());

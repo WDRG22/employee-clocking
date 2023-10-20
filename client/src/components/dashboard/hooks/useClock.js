@@ -2,12 +2,12 @@ import { useState } from 'react';
 import { useLocation, encodeLocation } from './useLocation';
 import { fetchWithTokenRefresh } from '../../../utils/apiUtils';
 
-const useClock = (user, setUser, setErrorMessage, isLoading, setIsLoading) => {
+const useClock = (employee, setEmployee, setErrorMessage, setIsLoading) => {
     const [clockEntry, setClockEntry] = useState(null);  
     const getLocation = useLocation();
 
-    const clock = async (endpoint, user_id, currentTime, location, coordinates, tasks) => {
-        const payload = endpoint === '/api/work_entries/clock_in' ? { user_id, currentTime, location, coordinates } : { user_id, currentTime, location, coordinates, tasks };
+    const clock = async (endpoint, employee_id, currentTime, location, coordinates, tasks) => {
+        const payload = endpoint === '/api/work_entries/clock_in' ? { employee_id, currentTime, location, coordinates } : { employee_id, currentTime, location, coordinates, tasks };
         try {
             const response = await fetchWithTokenRefresh(endpoint, {
                 method: 'POST',
@@ -17,7 +17,7 @@ const useClock = (user, setUser, setErrorMessage, isLoading, setIsLoading) => {
             });
             const data = await response.json();
             setClockEntry(data.clockEntry)
-            setUser(data.user);
+            setEmployee(data.employee);
         } catch (error) {
             console.log(error)
         }
@@ -28,7 +28,7 @@ const useClock = (user, setUser, setErrorMessage, isLoading, setIsLoading) => {
         setIsLoading(true);
         const coordinates = await getLocation();
         const location = await encodeLocation(coordinates);
-        clock('/api/work_entries/clock_in', user.user_id, new Date(), location, coordinates);
+        clock('/api/work_entries/clock_in', employee.employee_id, new Date(), location, coordinates);
     };
 
     const handleClockOut = async (tasks) => {
@@ -40,7 +40,7 @@ const useClock = (user, setUser, setErrorMessage, isLoading, setIsLoading) => {
         setErrorMessage('');  // Clearing error message if the input is valid
         const coordinates = await getLocation();
         const location = await encodeLocation(coordinates);
-        clock('/api/work_entries/clock_out', user.user_id, new Date(), location, coordinates, tasks);
+        clock('/api/work_entries/clock_out', employee.employee_id, new Date(), location, coordinates, tasks);
     };    
 
     return {

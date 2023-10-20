@@ -11,20 +11,21 @@ const routes = require('./routes.js');
 app.use(cookieParser());
 app.use(express.json());
 
-// Manual jwt verification. Decodes token to 'req.user' for use in routes
+// Manual jwt verification. Decodes token to 'req.employee' for use in routes
 const jwt = require('jsonwebtoken');
 app.use((req, res, next) => {
     const token = req.cookies.token;
 
     // List of paths that don't require authentication
-    const excludedPaths = ['/api/users/login', '/api/users/signup', '/api/refresh_tokens/refresh'];
+    const excludedPaths = ['/api/employees/login', '/api/employees/signup', '/api/refresh_tokens/refresh'];
 
     // If the request path is not in the excluded list
     if (!excludedPaths.includes(req.path)) {
         if (token) {
             try {
                 const decoded = jwt.verify(token, process.env.JWT_SECRET);
-                req.user = decoded;
+                req.employee = decoded;
+                console.log('decoded cookie: ', decoded)
                 next();
             } catch (err) {
                 // Invalid token

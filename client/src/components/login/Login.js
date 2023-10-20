@@ -1,18 +1,18 @@
 import { Link, useNavigate } from 'react-router-dom';
 import React, { useState } from 'react';
-import { useUser } from "../../auth/UserContext";
+import { useEmployee } from "../../auth/EmployeeContext";
 import { fetchWithTokenRefresh } from '../../utils/apiUtils';
 import logo from "../../assets/cyntra_logo_white.png";
 import './Login.css';
 
 export const Login = () => {
     const [data, setData] = useState({
-        email: "admin@admin.com",
-        password: "admin123",
+        email: "",
+        password: "",
         showPassword: false,
     });
     const [incorrectDetailsError, setIncorrectDetailsError] = useState('')
-    const { setUser } = useUser();
+    const { setEmployee } = useEmployee();
     const { email, password, showPassword } = data;
     const navigate = useNavigate();
 
@@ -26,7 +26,7 @@ export const Login = () => {
         e.preventDefault();
     
         try {
-            const response = await fetchWithTokenRefresh("/api/users/login", {
+            const response = await fetchWithTokenRefresh("/api/employees/login", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -36,14 +36,14 @@ export const Login = () => {
             
             const data = await response.json();
             if (response.ok) {
-                setUser(data.user);
+                setEmployee(data.employee);
                 navigate('/');
             } else {
                 setIncorrectDetailsError(data.message);
             }
         } catch (err) {
             console.error("An error occurred:", err);
-            alert("Failed to connect to the server. Please try again.");
+            setIncorrectDetailsError("Incorrect email or password. Please try again.");
         }
     }
 
@@ -62,7 +62,7 @@ export const Login = () => {
                         <span>Show password</span>
                     </label>
                 </div>
-                {incorrectDetailsError && <p style={{ color: 'red', fontWeight: 'bold' }}>{incorrectDetailsError}</p>}
+                {incorrectDetailsError && <p style={{ color: 'red' }}>{incorrectDetailsError}</p>}
                 <button className="button" type="submit">Login</button>
                 <Link className="createAccountLink" to="/signup">Create an account</Link>
             </form>

@@ -3,22 +3,22 @@ import { fetchWithTokenRefresh } from '../utils/apiUtils';
 import { TailSpin } from 'react-loading-icons';
 import './LoadingSpinner.css'
 
-const UserContext = createContext();
+const EmployeeContext = createContext();
 
-export const useUser = () => {
-    return useContext(UserContext);
+export const useEmployee = () => {
+    return useContext(EmployeeContext);
 }
 
-export const UserProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
+export const EmployeeProvider = ({ children }) => {
+    const [employee, setEmployee] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
-    // Fetch userData when component mounts
+    // Fetch employeeData when component mounts
     useEffect(() => {
-        const fetchUserData = async () => {
+        const fetchEmployeeData = async () => {
             setIsLoading(true);
             try {
-                const response = await fetchWithTokenRefresh("/api/users/user", {
+                const response = await fetchWithTokenRefresh("/api/employees/employee", {
                     method: 'GET',
                     credentials: 'include',
                     headers: {
@@ -28,24 +28,24 @@ export const UserProvider = ({ children }) => {
                 
                 if (response.ok) {
                     const data = await response.json();                     
-                    console.log("UserContext user data:", data.user)
-                    setUser(data.user);
+                    console.log("EmployeeContext employee data:", data.employee)
+                    setEmployee(data.employee);
                 } else {
-                    setUser(null);
+                    setEmployee(null);
                 }
 
             } catch (error) {
-                console.log("Error fetching user data: ", error);
+                console.log("Error fetching employee data: ", error);
             } finally {
                 setIsLoading(false);
             }
         };
-        fetchUserData();
+        fetchEmployeeData();
     }, []);
 
     return (
-        <UserContext.Provider value={{ user, setUser, isLoading }}>
+        <EmployeeContext.Provider value={{ employee, setEmployee, isLoading }}>
             {isLoading ? <TailSpin className='loadingSpinner'/> : children}
-        </UserContext.Provider>
+        </EmployeeContext.Provider>
     );
 }

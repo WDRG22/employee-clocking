@@ -48,7 +48,7 @@ export const Signup = () => {
         }
 
         try {
-            const response = await fetchWithTokenRefresh("/api/users/signup", {
+            const response = await fetchWithTokenRefresh("/api/employees/signup", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

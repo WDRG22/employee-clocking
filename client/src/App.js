@@ -1,13 +1,13 @@
-import { UserProvider } from "./auth/UserContext";
+import { EmployeeProvider } from "./auth/EmployeeContext";
 import MyRouter from "./routes/MyRouter";
 import './globalStyles.css';
 
 function App() {
     return (
         <>
-            <UserProvider>
+            <EmployeeProvider>
                 <MyRouter/>            
-            </UserProvider>
+            </EmployeeProvider>
         </>      
     );
   }

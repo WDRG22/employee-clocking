@@ -1,26 +1,27 @@
 import React, { useState } from "react";
-import useClock from '../hooks/useClock';
-import { useUser } from "../../../auth/UserContext";
+import useClock from '../../hooks/useClock';
+import { useEmployee } from "../../../../auth/EmployeeContext";
 import { TailSpin } from 'react-loading-icons';
+import "./Clocking.css";
 
 const Clocking = () => {
-    const {user, setUser} = useUser();
+    const {employee, setEmployee} = useEmployee();
     const [tasks, setTasks] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
-    const { handleClockIn, handleClockOut, clockOutInfo }  = useClock(user, setUser, setErrorMessage, isLoading, setIsLoading);
+    const { handleClockIn, handleClockOut, clockOutInfo }  = useClock(employee, setEmployee, setErrorMessage, isLoading, setIsLoading);
 
     return (
-        <div>
+        <div className="clockingContainer">
             {/* ClockStatus Section */}
-            <div className={`clockStatus ${user.is_clocked_in ? 'ClockedIn' : 'ClockedOut'}`}>
-                {`${user.is_clocked_in? "Clocked In" : "Clocked Out" }`}
+            <div className={`clockStatus ${employee.is_clocked_in ? 'ClockedIn' : 'ClockedOut'}`}>
+                {`${employee.is_clocked_in? "Clocked In" : "Clocked Out" }`}
                 <div className="buttonGroup">
-                    <button className="button" onClick={handleClockIn} disabled={user.is_clocked_in || isLoading}>
-                        {isLoading && !user.is_clocked_in ? <TailSpin/> : 'Clock In'}
+                    <button className="button" onClick={handleClockIn} disabled={employee.is_clocked_in || isLoading}>
+                        {isLoading && !employee.is_clocked_in ? <TailSpin/> : 'Clock In'}
                     </button> 
-                    <button className="button" onClick={() => handleClockOut(tasks)} disabled={!user.is_clocked_in || isLoading}>
-                        {isLoading && user.is_clocked_in ? <TailSpin/> : 'Clock Out'}
+                    <button className="button" onClick={() => handleClockOut(tasks)} disabled={!employee.is_clocked_in || isLoading}>
+                        {isLoading && employee.is_clocked_in ? <TailSpin/> : 'Clock Out'}
                     </button>
                 </div>
             </div>
@@ -35,7 +36,7 @@ const Clocking = () => {
             }
 
             {/* Clock out task entry */}
-            {user.is_clocked_in &&
+            {employee.is_clocked_in &&
                 <div className="taskEntry">
                     <textarea
                         id="tasks"

@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const pgp = require('pg-promise')();
 const crypto = require('crypto');
+const { as } = require('pg-promise');
 
 const dbConfig = {
     host: 'localhost',
@@ -16,26 +17,27 @@ const db = pgp(dbConfig);
 const router = express.Router();
 const saltRounds = 10;
 
-// Login verification and JWT authentication and authorization
-router.post('/api/users/login', async (req, res, next) => {
+// Login employee
+// Generates JWT and refresh tokens, sent as cookies
+router.post('/api/employees/login', async (req, res, next) => {
     const { email, password } = req.body;
     try {
-        const user = await db.oneOrNone('SELECT * FROM users WHERE email = $1', [email]);
+        const employee = await db.oneOrNone('SELECT * FROM employees WHERE email = $1', [email]);
         
-        if (user && await bcrypt.compare(password, user.password)) {        
+        if (employee && await bcrypt.compare(password, employee.password)) {        
 
-            // Generate JWT token from unique user id
+            // Generate JWT token from unique employee id
             const payload = {
-                user_id: user.user_id // Use 'id' instead of '_id'
+                employee_id: employee.employee_id // Use 'id' instead of '_id'
             };
             
             const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-            // Generate refresh token and insert into db w/ corresponding user_id
+            // Generate refresh token and insert into db w/ corresponding employee_id
             const refreshToken = crypto.randomBytes(64).toString('hex');
             await db.none(
-                'INSERT INTO refresh_tokens (token, user_id) VALUES ($1, $2)',
-                [refreshToken, user.user_id]
+                'INSERT INTO refresh_tokens (token, employee_id) VALUES ($1, $2)',
+                [refreshToken, employee.employee_id]
             );
             
             // Send tokens as cookies
@@ -52,8 +54,8 @@ router.post('/api/users/login', async (req, res, next) => {
                 maxAge: 7 * 24 * 3600000 // 1 week
             });
             
-            const { password: _, ...userData } = user;  // Exclude password from response
-            res.status(200).json({ message: 'Login successful', user: userData });
+            const { password: _, ...employeeData } = employee;  // Exclude password from response
+            res.status(200).json({ message: 'Login successful', employee: employeeData });
         } else {
             res.status(401).json({ message: 'Invalid email or password' });
         }
@@ -62,14 +64,14 @@ router.post('/api/users/login', async (req, res, next) => {
     }
 });
 
-// New user creation
-router.post('/api/users/signup', async (req, res, next) => {
+// Create new employee
+router.post('/api/employees/signup', async (req, res, next) => {
     const { firstName, lastName, email, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     try {
-        const newUser = await db.one('INSERT INTO users(first_name, last_name, email, password) VALUES($1, $2, $3, $4) RETURNING *', [firstName, lastName, email, hashedPassword]);
-        res.status(200).json({ message: 'User registered', newUser });
+        const newEmployee = await db.one('INSERT INTO employees(first_name, last_name, email, password) VALUES($1, $2, $3, $4) RETURNING *', [firstName, lastName, email, hashedPassword]);
+        res.status(200).json({ message: 'Employee registered', newEmployee });
     } catch (error) {
         if (error.code === '23505') { // Unique violation in PostgreSQL
             return res.status(400).json({ message: 'An account with this email already exists' });
@@ -79,8 +81,8 @@ router.post('/api/users/signup', async (req, res, next) => {
     }
 });
 
-// Logout
-router.post('/api/users/logout', async (req, res) => {
+// Logout current employee
+router.post('/api/employees/logout', async (req, res) => {
     // Clear JWT and refresh token cookies
     res.clearCookie('token');
     res.clearCookie('refreshToken');
@@ -93,28 +95,28 @@ router.post('/api/users/logout', async (req, res) => {
     res.status(200).json({ message: 'Logged out successfully' });
 });
 
-// Get user user data if logged in
-router.get('/api/users/user', async (req, res, next) => {
-    const user_id = req.user ? req.user.user_id : null;
+// Get current employee's data
+router.get('/api/employees/employee', async (req, res, next) => {
+    const employee_id = req.employee ? req.employee.employee_id : null;
     
     try {
         
-        // Get user data
-        const userData = await db.oneOrNone(
-            'SELECT * FROM users WHERE user_id = $1',
-            [user_id]
+        // Get employee data
+        const employeeData = await db.oneOrNone(
+            'SELECT * FROM employees WHERE employee_id = $1',
+            [employee_id]
         );
             
-        // Check if user was found in the database
-        if (!userData) {
-            return res.status(404).json({ error: 'User not found' });
+        // Check if employee was found in the database
+        if (!employeeData) {
+            return res.status(404).json({ error: 'Employee not found' });
         };
             
-        const {password, ...userWithoutPassword } = userData;
-        res.json({ user: userWithoutPassword });
+        const {password, ...employeeWithoutPassword } = employeeData;
+        res.json({ employee: employeeWithoutPassword });
     } catch (error) {
         console.log(error);
-        if (error.message.includes('Not authenticated') || error.message.includes('User not found')) {
+        if (error.message.includes('Not authenticated') || error.message.includes('Employee not found')) {
             res.status(401).json({ error: error.message });
         } else {
             next(error);
@@ -122,82 +124,14 @@ router.get('/api/users/user', async (req, res, next) => {
     }
 });
 
-// Clock in
-router.post('/api/work_entries/clock_in', async (req, res, next) => {
-    const { user_id, currentTime, location, coordinates } = req.body;
-    const coordinatesPoint = `(${coordinates.latitude}, ${coordinates.longitude})`;
-
-    try {
-        // Check for an incomplete entry for the user
-        const incompleteEntry = await db.oneOrNone(
-            'SELECT * FROM work_entries WHERE user_id = $1 AND clock_out_time IS NULL',
-            [user_id]
-        );
-
-        if (incompleteEntry) {
-            // If incomplete entry found, prevent clock-in
-            return res.status(400).json({ message: 'You need to clock out before clocking in again.' });
-        }
-
-        const clockEntry = await db.one(
-            'INSERT INTO work_entries(user_id, clock_in_time, clock_in_location, clock_in_coordinates) VALUES($1, $2, $3, $4) RETURNING *',
-            [user_id, currentTime, location, coordinatesPoint]
-        );
-
-        const userData = await db.oneOrNone(
-            `SELECT * FROM users WHERE user_id = $1`
-        , [user_id]);
-
-        const {password, ...user} = userData
-
-        res.status(200).json({ message: 'Clocked in', clockEntry, user });
-    } catch (error) {
-        console.error(error);
-        next(error);
-    }
-});
-
-// Clock-out
-router.post('/api/work_entries/clock_out', async (req, res, next) => {
-    const { user_id, currentTime, location, coordinates, tasks } = req.body;
-    const coordinatesPoint = `(${coordinates.latitude}, ${coordinates.longitude})`;
-
-    try {
-        const clockEntry = await db.oneOrNone(
-            `UPDATE work_entries 
-             SET clock_out_time = $2, clock_out_location = $3, clock_out_coordinates = $4, tasks = $5
-             WHERE user_id = $1 AND clock_out_time IS NULL
-             RETURNING *`,
-            [user_id, currentTime, location, coordinatesPoint, tasks]
-        );
-
-        const userData = await db.oneOrNone(
-            `SELECT * FROM users WHERE user_id = $1`, 
-            [user_id]
-        );
-
-        if (!clockEntry) {
-            return res.status(400).json({ message: 'No active session to clock out from.' });
-        }
-
-        // Remove password
-        const { password, ...user } = userData;
-
-        res.status(200).json({ message: 'Clocked out', clockEntry, user });
-    } catch (error) {
-        console.error(error);
-        next(error);
-    }
-});
-
-// Get user's work entries
-router.get('/api/work_entries/user', async (req, res, next) => {
-    const user_id = req.user.user_id;
+// Get an employee's work entry data
+router.get('/api/work_entries/:employee_id', async (req, res, next) => {
+    const employee_id = req.params.employee_id;
 
     try {
         const entries = await db.any(
-            'SELECT * FROM work_entries WHERE user_id = $1 ORDER BY entry_id DESC', 
-            [user_id]
+            'SELECT * FROM work_entries WHERE employee_id = $1 ORDER BY entry_id DESC', 
+            [employee_id]
         );
 
         res.json(entries);
@@ -207,80 +141,87 @@ router.get('/api/work_entries/user', async (req, res, next) => {
     }
 });
 
-// ADMIN ROUTES
-
-// Get all work_entries
-router.get('/api/admin/work_entries', async (req, res, next) => {
-    try {
-        const entries = await db.any('SELECT * FROM work_entries ORDER BY entry_id DESC');
-        res.json(entries);
-    } catch (error) {
-        console.error('Error fetching all work entries:', error);
-        res.status(500).json({ error: 'Failed to fetch work entries' });
-    }
-});
-
-// Create new work entry
-router.post('/api/admin/work_entries', async (req, res, next) => {
-    const { user_id, clock_in_time, clock_out_time, tasks, clock_in_coordinates, clock_out_coordinates, hours_worked } = req.body;
+// Clock current employee in
+router.post('/api/work_entries/clock_in', async (req, res, next) => {
+    const { employee_id, currentTime, location, coordinates } = req.body;
+    const coordinatesPoint = `(${coordinates.latitude}, ${coordinates.longitude})`;
 
     try {
-        await db.none(
-            'INSERT INTO work_entries (user_id, clock_in_time, clock_out_time, tasks, clock_in_coordinates, clock_out_coordinates, hours_worked) VALUES ($1, $2, $3, $4, $5, $6, $7)', 
-            [user_id, clock_in_time, clock_out_time, tasks, clock_in_coordinates, clock_out_coordinates, hours_worked]
+        // Check for an incomplete entry for the employee
+        const incompleteEntry = await db.oneOrNone(
+            'SELECT * FROM work_entries WHERE employee_id = $1 AND clock_out_time IS NULL',
+            [employee_id]
         );
 
-        res.json({ message: 'Work entry created successfully.' });
-    } catch (error) {
-        console.error('Error inserting work entry:', error);
-        res.status(500).json({ error: 'Failed to create work entry' });
-    }
-});
+        if (incompleteEntry) {
+            // If incomplete entry found, prevent clock-in
+            return res.status(400).json({ message: 'You need to clock out before clocking in again.' });
+        }
 
-// Update work entry
-router.put('/api/work_entries/:entry_id', async (req, res, next) => {
-    const entryId = req.params.entry_id;
-    const { user_id, clock_in_time, clock_out_time, tasks, clock_in_coordinates, clock_out_coordinates, hours_worked } = req.body;
-
-    try {
-        await db.none(
-            'UPDATE work_entries SET user_id=$1, clock_in_time=$2, clock_out_time=$3, tasks=$4, clock_in_coordinates=$5, clock_out_coordinates=$6, hours_worked=$7 WHERE entry_id=$8',
-            [user_id, clock_in_time, clock_out_time, tasks, clock_in_coordinates, clock_out_coordinates, hours_worked, entryId]
+        const clockEntry = await db.one(
+            'INSERT INTO work_entries(employee_id, clock_in_time, clock_in_location, clock_in_coordinates) VALUES($1, $2, $3, $4) RETURNING *',
+            [employee_id, currentTime, location, coordinatesPoint]
         );
 
-        res.json({ message: 'Work entry updated successfully.' });
+        const employeeData = await db.oneOrNone(
+            `SELECT * FROM employees WHERE employee_id = $1`
+        , [employee_id]);
+
+        const {password, ...employee} = employeeData
+
+        res.status(200).json({ message: 'Clocked in', clockEntry, employee });
     } catch (error) {
-        console.error('Error updating work entry:', error);
-        res.status(500).json({ error: 'Failed to update work entry' });
+        console.error(error);
+        next(error);
     }
 });
 
-
-// Delete a work entry
-router.delete('/api/admin/work_entries/:entry_id', async (req, res, next) => {
-    const entryId = req.params.entry_id;
+// Clock current employee out
+router.post('/api/work_entries/clock_out', async (req, res, next) => {
+    const { employee_id, currentTime, location, coordinates, tasks } = req.body;
+    const coordinatesPoint = `(${coordinates.latitude}, ${coordinates.longitude})`;
 
     try {
-        await db.none('DELETE FROM work_entries WHERE entry_id=$1', [entryId]);
-        res.json({ message: 'Work entry deleted successfully.' });
+        const clockEntry = await db.oneOrNone(
+            `UPDATE work_entries 
+             SET clock_out_time = $2, clock_out_location = $3, clock_out_coordinates = $4, tasks = $5
+             WHERE employee_id = $1 AND clock_out_time IS NULL
+             RETURNING *`,
+            [employee_id, currentTime, location, coordinatesPoint, tasks]
+        );
+
+        const employeeData = await db.oneOrNone(
+            `SELECT * FROM employees WHERE employee_id = $1`, 
+            [employee_id]
+        );
+
+        if (!clockEntry) {
+            return res.status(400).json({ message: 'No active session to clock out from.' });
+        }
+
+        // Remove password
+        const { password, ...employee } = employeeData;
+
+        res.status(200).json({ message: 'Clocked out', clockEntry, employee });
     } catch (error) {
-        console.error('Error deleting work entry:', error);
-        res.status(500).json({ error: 'Failed to delete work entry' });
+        console.error(error);
+        next(error);
     }
 });
 
-router.post('/api/users/user/change_password', async (req, res, next) => {
-    const user_id = req.user.user_id;
+// Change current employee's password
+router.post('/api/employees/employee/change_password', async (req, res, next) => {
+    const employee_id = req.employee.employee_id;
     const { oldPassword, newPassword } = req.body;
 
     try {        
-        const user = await db.oneOrNone('SELECT * FROM users WHERE user_id = $1', [user_id]);
+        const employee = await db.oneOrNone('SELECT * FROM employees WHERE employee_id = $1', [employee_id]);
 
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
+        if (!employee) {
+            return res.status(404).json({ message: 'Employee not found' });
         }
 
-        const match = await bcrypt.compare(oldPassword, user.password);
+        const match = await bcrypt.compare(oldPassword, employee.password);
 
         if (!match) {
             return res.status(401).json({ message: 'The entered password does not match your current password.' });
@@ -288,7 +229,7 @@ router.post('/api/users/user/change_password', async (req, res, next) => {
 
         // Hash the new password and update it in the database
         const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
-        await db.none('UPDATE users SET password = $1 WHERE user_id = $2', [hashedPassword, user_id]);
+        await db.none('UPDATE employees SET password = $1 WHERE employee_id = $2', [hashedPassword, employee_id]);
 
         // Respond with a success message
         res.status(200).json({ message: 'Password changed successfully' });
@@ -298,16 +239,32 @@ router.post('/api/users/user/change_password', async (req, res, next) => {
     }
 });
 
+// ADMIN ROUTES
+
+// Get all employees
+router.get('/api/employees', async (req, res, next) => {
+    try {
+        // Query the database to retrieve all employees
+        const employees = await db.any('SELECT * FROM employees');
+
+        // Respond with the list of employees
+        res.status(200).json(employees);
+    } catch (error) {
+        // Handle errors, e.g., database errors
+        console.error('Error fetching employees:', error);
+        res.status(500).json({ error: 'Failed to fetch employees' });
+    }
+});
 
 // Refresh token
 router.post('/api/refresh_tokens/refresh', async (req, res, next) => {
     const { refreshToken } = req.cookies;
     
-    const storedToken = await db.oneOrNone('SELECT user_id FROM refresh_tokens WHERE token = $1', [refreshToken]);
+    const storedToken = await db.oneOrNone('SELECT employee_id FROM refresh_tokens WHERE token = $1', [refreshToken]);
 
     if (storedToken) {
         const payload = {
-            user_id: storedToken.user_id
+            employee_id: storedToken.employee_id
         };
         const newToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
 

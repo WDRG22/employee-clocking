@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { TailSpin } from 'react-loading-icons';
+import EmployeeList from '../employeeList/EmployeeList';
 
 export const AdminDashboard = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -9,7 +10,7 @@ export const AdminDashboard = () => {
         <div className="adminDashboard">
             <h1>Admin Dashboard</h1>
             {isLoading && <TailSpin />}
-            {error && <p className="error-message">{error}</p>}
+            <EmployeeList />
         </div>
     );
 };

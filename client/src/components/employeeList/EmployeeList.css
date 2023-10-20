@@ -1,0 +1,110 @@
+.employeeListContainer {
+    margin-top: 10vh;
+    margin-left: 5rem;
+    margin-right: 5rem;
+}
+
+.employeeListContainer .tableControls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.employeeListContainer .tableControls .nextPrevButtons {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.employeeListContainer .tableControls button {
+    border-radius: .5rem;
+    background-color: var(--color-primary-blue);
+    color: var(--color-white);
+    padding: 6px 12px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.employeeListContainer .tableControls button:disabled {
+    background-color: var(--color-lighter-gray);
+    cursor: not-allowed;
+}
+
+.employeeListContainer .tableControls button:hover:not(:disabled) {
+    background-color: var(--color-dark-blue);
+}
+
+.employeeListContainer .pagination {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.employeeListContainer .pagination span {
+    color: white;
+    font-size: 20px;
+}
+
+.employeeListContainer .pagination button {
+    border-radius: .5rem;
+    background-color: var(--color-primary-blue);
+    color: var(--color-white);
+    padding: 6px 12px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.employeeListContainer .pagination button.active {
+    background-color: var(--color-dark-blue);
+}
+
+.employeeListContainer .pagination button:hover {
+    background-color: var(--color-dark-blue);
+}
+
+.employeeListContainer h1 {
+    font-size: 28px;
+    margin-bottom: 20px;
+    color: var(--color-white);
+}
+
+.employeeListContainer table {
+    width: 100%;
+    border-collapse: collapse;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.employeeListContainer table, th, td {
+    border: 1px solid var(--color-dark-gray);
+}
+
+.employeeListContainer th, td {
+    padding: 12px 15px;
+    text-align: left;    
+}
+
+.employeeListContainer thead {
+    background-color: var(--color-medium-gray);
+    color: var(--color-light-blue);
+}
+
+.employeeListContainer tbody {
+    background-color: var(--color-light-gray);
+    color: var(--color-white);
+}
+
+.employeeListContainer tbody tr:hover {
+    background-color: var(--color-dark-blue);
+    cursor: pointer;
+}
+
+.employeeListContainer .error-message {
+    color: var(--color-danger-red);
+    margin-top: 1rem;
+    font-size: 18px;
+}

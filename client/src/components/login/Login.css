@@ -51,7 +51,7 @@
 }
 
 .login .input::placeholder {
-    color: var(--color-light-blue);
+    color: var(--color-white);
 }
 
 .login .button {

@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { useUser } from '../../auth/UserContext';
+import { useEmployee } from '../../auth/EmployeeContext';
 import './Settings.css';
 import { fetchWithTokenRefresh } from '../../utils/apiUtils';
 import TailSpin from 'react-loading-icons/dist/esm/components/tail-spin';
 
 function Settings() {
-    const { user } = useUser();
+    const { employee } = useEmployee();
     const [currentPassword, setCurrentPassword] = useState('');  // New state for current password
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -17,12 +17,12 @@ function Settings() {
         setError(null);   // Reset error message
     
         if (newPassword !== confirmPassword) {
-            setError('Passwords do not match!');
+            setError('Confirm password does not match');
             return;
         }
     
         try {
-            const response = await fetchWithTokenRefresh('/api/users/user/change_password', {
+            const response = await fetchWithTokenRefresh('/api/employees/employee/change_password', {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
@@ -60,9 +60,9 @@ function Settings() {
                 <div className='accountInfo'>
                     <h1>Settings</h1>
                     <h2>Account Information</h2>
-                    <p>{user.first_name} {user.last_name}</p>
-                    <p>User ID: {user.user_id}</p>
-                    <p>Email: {user.email}</p>
+                    <p>{employee.first_name} {employee.last_name}</p>
+                    <p>Employee ID: {employee.employee_id}</p>
+                    <p>Email: {employee.email}</p>
                 </div>
                 <div className='passwordChange'>
                     <h2>Change Password</h2>

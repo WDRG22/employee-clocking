@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-// Utility function for geocoding user coordinates
+// Utility function for geocoding employee coordinates
 export async function encodeLocation(coord) {
     const lat = coord.latitude;
     const lng = coord.longitude;
@@ -25,7 +25,7 @@ export async function encodeLocation(coord) {
     }
 }
 
-// Hook for getting user location
+// Hook for getting employee location
 export const useLocation = () => {
     const getLocation = async () => {
         try {

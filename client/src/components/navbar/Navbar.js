@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useUser } from '../../auth/UserContext';
+import { useEmployee } from '../../auth/EmployeeContext';
 import { fetchWithTokenRefresh } from '../../utils/apiUtils';
 import logo from '../../assets/cyntra_logo_white.png'
 import './Navbar.css';
 
 const Navbar = () => {
     const navigate = useNavigate();
-    const { user, setUser } = useUser();
+    const { employee, setEmployee } = useEmployee();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
     const logout = async () => {
         try {
-            const response = await fetchWithTokenRefresh('/api/users/logout', {
+            const response = await fetchWithTokenRefresh('/api/employees/logout', {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
@@ -21,7 +21,7 @@ const Navbar = () => {
             });
     
             if (response.status === 200) {
-                setUser(null);
+                setEmployee(null);
                 navigate('/login');
             } else {
                 const data = await response.json();
@@ -38,8 +38,8 @@ const Navbar = () => {
                 <div className='navbarLeft'>
                     <div className="navigationButtons">
                         <button className="navButton" onClick={() => navigate('/')}>Dashboard</button>
-                        {!user.is_admin && 
-                            <button className="navButton" onClick={() => navigate('/attendance')}>Attendance</button>
+                        {!employee.is_admin && 
+                            <button className="navButton" onClick={() => navigate(`/attendance/${employee.employee_id}`)}>Attendance</button>
                         }
                     </div>
                 </div>    
@@ -57,9 +57,10 @@ const Navbar = () => {
                 {isDropdownOpen && 
                 <div className="mobileDropdown">
                     <button className="mobileNavButton" onClick={() => navigate('/')}>Dashboard</button>
-                    {!user.is_admin && 
+                    {!employee.is_admin && 
                         <button className="mobileNavButton" onClick={() => navigate('/attendance')}>Attendance</button>
                     }
+                    <button className="mobileNavButton" onClick={() => navigate('/settings')}>Settings</button>
                     <button className="mobileLogoutButton" onClick={logout}>Logout</button>
                 </div>}
             </div>

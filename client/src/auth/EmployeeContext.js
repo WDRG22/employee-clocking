@@ -27,7 +27,8 @@ export const EmployeeProvider = ({ children }) => {
                 });
                 
                 if (response.ok) {
-                    const data = await response.json();                     
+                    const data = await response.json();  
+                    console.log("employeeData", data);            
                     setEmployee(data.employee);
                 } else {
                     setEmployee(null);

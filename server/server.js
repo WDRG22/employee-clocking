@@ -1,11 +1,14 @@
-require('dotenv').config();
 const path = require('path');
 const express = require('express');
+const { connectDb } = require('./db');
 const https = require('https');
 const fs = require('fs');
 const cookieParser = require('cookie-parser');
 const app = express();
 const routes = require('./routes.js');
+
+// Connect to mongodb
+connectDb();
 
 // Log incoming requests
 app.use((req, res, next) => {

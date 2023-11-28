@@ -28,6 +28,7 @@ const useClock = (employee, setEmployee, setErrorMessage, isLoading, setIsLoadin
         setIsLoading(true);
         const coordinates = await getLocation();
         const location = await encodeLocation(coordinates);
+        console.log("employee.employee_id: ", employee.employee_id)
         clock('/api/work_entries/clock_in', employee.employee_id, new Date(), location, coordinates);
     };
 
